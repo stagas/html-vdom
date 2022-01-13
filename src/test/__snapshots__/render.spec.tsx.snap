@@ -1,0 +1,125 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`render arrays fragments 1`] = `"<ul><li>a</li><li>b</li><li>c</li></ul>"`;
+
+exports[`render arrays renders 1`] = `"<ul><li>a</li><li>b</li><li>c</li></ul>"`;
+
+exports[`render arrays reorders 1`] = `"<ul><li>a</li><li>b</li><li>c</li></ul>"`;
+
+exports[`render arrays reorders 2`] = `"<ul><li>c</li><li>a</li><li>b</li></ul>"`;
+
+exports[`render changing children multiple times 1`] = `"<ul><li>a</li><li>b</li><li>c</li></ul>"`;
+
+exports[`render changing children multiple times 2`] = `"<ul><li>c</li><li>a</li><li>b</li></ul>"`;
+
+exports[`render changing children multiple times 3`] = `"<ul><li>a</li><li>d</li><li>c</li><li>b</li></ul>"`;
+
+exports[`render changing children multiple times 4`] = `"<ul><li>d</li><li>b</li></ul>"`;
+
+exports[`render changing children multiple times 5`] = `"<ul></ul>"`;
+
+exports[`render complex tree 1`] = `"<div><ul><li><button>some text <span>a</span></button></li><li><button>here too <span>b</span></button></li><li><button><span>c</span> and here</button></li></ul></div>"`;
+
+exports[`render complex tree 2`] = `"<div><ul><li><button>some text <span>a</span></button></li><li><button><span>c</span> and here</button></li><li><button>hey <span>d</span> yo</button></li><li><button>here too <span>b</span></button></li></ul></div>"`;
+
+exports[`render fragment changing and reusing children 1`] = `"hello<div>world</div><span>hey</span>"`;
+
+exports[`render fragment changing and reusing children 2`] = `"<div>world</div><div>other</div>another<span>yo</span>"`;
+
+exports[`render fragment changing fragments within fragments 1`] = `"onehello<div>world</div><span>hey</span>"`;
+
+exports[`render fragment changing fragments within fragments 2`] = `"hello<div>world</div><span>hey</span>one"`;
+
+exports[`render fragment changing text 1`] = `"hello world"`;
+
+exports[`render fragment changing text 2`] = `"another world"`;
+
+exports[`render fragment fragments within fragments 1`] = `"onehello<div>world</div><span>hey</span>"`;
+
+exports[`render fragment multiple children 1`] = `"hello<div>world</div><span>hey</span>"`;
+
+exports[`render fragment simple text 1`] = `"hello world"`;
+
+exports[`render functions empty fragment 1`] = `""`;
+
+exports[`render functions pass props 1`] = `"answer is <b>42</b>"`;
+
+exports[`render functions simple text 1`] = `"hello world"`;
+
+exports[`render functions with children 1`] = `"hello world"`;
+
+exports[`render hooks changes deeply element 1`] = `"<main><div>0</div></main>"`;
+
+exports[`render hooks changes deeply element 2`] = `"<main><div>1</div></main>"`;
+
+exports[`render hooks changes deeply with children 1`] = `"<main><div><span>the answer is</span> 41</div></main>"`;
+
+exports[`render hooks changes deeply with children 2`] = `"<main><div><span>the answer is</span> 42</div></main>"`;
+
+exports[`render hooks changes top element 1`] = `"hello0world"`;
+
+exports[`render hooks changes top element 2`] = `"hello<div>1</div>world"`;
+
+exports[`render hooks changes top element 3`] = `"hello2world"`;
+
+exports[`render hooks changes top element 4`] = `"hello<div>3</div>world"`;
+
+exports[`render hooks deep they dont leak 1`] = `"0"`;
+
+exports[`render hooks deep they dont leak 2`] = `"1"`;
+
+exports[`render hooks deep they dont leak 3`] = `"2"`;
+
+exports[`render hooks mulitple triggers 1`] = `"0"`;
+
+exports[`render hooks mulitple triggers 2`] = `"1"`;
+
+exports[`render hooks mulitple triggers 3`] = `"2"`;
+
+exports[`render hooks mulitple triggers 4`] = `"3"`;
+
+exports[`render hooks they dont leak 1`] = `"0"`;
+
+exports[`render hooks they dont leak 2`] = `"1"`;
+
+exports[`render hooks they dont leak 3`] = `"2"`;
+
+exports[`render hooks they dont leak 4`] = `"3"`;
+
+exports[`render hooks trigger 1`] = `"0"`;
+
+exports[`render hooks trigger 2`] = `"1"`;
+
+exports[`render hooks updates only self 1`] = `"hello0world"`;
+
+exports[`render hooks updates only self 2`] = `"hello1world"`;
+
+exports[`render hooks updates only self 3`] = `"hello2world"`;
+
+exports[`render hooks updates only self 4`] = `"hello3world"`;
+
+exports[`render morph same lane 1`] = `"hello there world"`;
+
+exports[`render morph same lane 2`] = `"hello<div> there </div>world"`;
+
+exports[`render morphs child text keeping references 1`] = `"<div>hello</div>"`;
+
+exports[`render morphs child text keeping references 2`] = `"<div>world</div>"`;
+
+exports[`render morphs div to p 1`] = `"<div></div>"`;
+
+exports[`render morphs div to p 2`] = `"<p></p>"`;
+
+exports[`render props create 1`] = `"<div id=\\"foo\\">hello world</div>"`;
+
+exports[`render props update 1`] = `"<div id=\\"foo\\">hello world</div>"`;
+
+exports[`render props update 2`] = `"<div id=\\"bar\\">hello world</div>"`;
+
+exports[`render single div 1`] = `"<div></div>"`;
+
+exports[`render ul multiple children 1`] = `"<ul><li>a</li><li>b</li><li>c</li></ul>"`;
+
+exports[`render ul multiple children 2`] = `"<ul><li>c</li><li>a</li><li>b</li></ul>"`;
+
+exports[`render with child text 1`] = `"<div>hello world</div>"`;

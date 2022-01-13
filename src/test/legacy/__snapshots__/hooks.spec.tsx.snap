@@ -1,0 +1,105 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`hooks 123 different tree 1`] = `"<div><p>foo</p></div>"`;
+
+exports[`hooks 123 different tree 2`] = `"<div><p>bar</p></div>"`;
+
+exports[`hooks 123 different tree 3`] = `"<div><p>zoo</p></div>"`;
+
+exports[`hooks deep and change 1`] = `"<p>0</p>"`;
+
+exports[`hooks deep and change 2`] = `"<p>1</p>"`;
+
+exports[`hooks deep and change 3`] = `"<b>2</b>"`;
+
+exports[`hooks deep and change 4`] = `"<b>3</b>"`;
+
+exports[`hooks deep hook 2 layers 1`] = `"<p>0</p>"`;
+
+exports[`hooks deep hook 2 layers 2`] = `"<p>1</p>"`;
+
+exports[`hooks deep hook 2 layers 3`] = `"<p>2</p>"`;
+
+exports[`hooks deep hook 3 layers 1`] = `"<p>0</p>"`;
+
+exports[`hooks deep hook 3 layers 2`] = `"<p>1</p>"`;
+
+exports[`hooks deep hook 3 layers 3`] = `"<p>2</p>"`;
+
+exports[`hooks deep hook 3 layers, top div 1`] = `"<div><p>0</p></div>"`;
+
+exports[`hooks deep hook 3 layers, top div 2`] = `"<div><p>1</p></div>"`;
+
+exports[`hooks deep hook 3 layers, top div 3`] = `"<div><p>2</p></div>"`;
+
+exports[`hooks different tree using useHook 1`] = `"<div><p>foo</p></div>"`;
+
+exports[`hooks different tree using useHook 2`] = `"<div><p>bar</p></div>"`;
+
+exports[`hooks different tree using useHook 3`] = `"<div><p>zoo</p></div>"`;
+
+exports[`hooks fragment top 1`] = `"0"`;
+
+exports[`hooks fragment top 2`] = `"1"`;
+
+exports[`hooks fragment top 3`] = `"2"`;
+
+exports[`hooks fragment top 4`] = `"3"`;
+
+exports[`hooks multiple hooks same parent 1`] = `"<p>0</p>"`;
+
+exports[`hooks multiple hooks same parent 2`] = `"<p>1</p>"`;
+
+exports[`hooks multiple hooks same parent 3`] = `"<p>2</p>"`;
+
+exports[`hooks p 1`] = `"<p>foo</p>"`;
+
+exports[`hooks p 2`] = `"<p>bar</p>"`;
+
+exports[`hooks p inc a number 1`] = `"<p>0</p>"`;
+
+exports[`hooks p inc a number 2`] = `"<p>1</p>"`;
+
+exports[`hooks p inc a number 3`] = `"<p>2</p>"`;
+
+exports[`hooks p inc a number 4`] = `"<p>3</p>"`;
+
+exports[`hooks prevent retrigger 1`] = `"<p>0</p>"`;
+
+exports[`hooks prevent retrigger 2`] = `"<p>1</p>"`;
+
+exports[`hooks prevent retrigger 3`] = `"<p>2</p>"`;
+
+exports[`hooks same tree 1`] = `"<p>foo</p>"`;
+
+exports[`hooks same tree 2`] = `"<p>bar</p>"`;
+
+exports[`hooks same tree 3`] = `"<p>zoo</p>"`;
+
+exports[`hooks same tree using useHook 1`] = `"<p>foo</p>"`;
+
+exports[`hooks same tree using useHook 2`] = `"<p>bar</p>"`;
+
+exports[`hooks same tree using useHook 3`] = `"<p>zoo</p>"`;
+
+exports[`hooks useCallback 1`] = `"<p>0</p>"`;
+
+exports[`hooks useCallback 2`] = `"<p>1</p>"`;
+
+exports[`hooks useCallback 3`] = `"<p>2</p>"`;
+
+exports[`hooks useCallback passes arguments and this 1`] = `"<button onclick=\\"\\">0</button>"`;
+
+exports[`hooks useCallback passes arguments and this 2`] = `"<button onclick=\\"\\">1</button>"`;
+
+exports[`hooks useCallback passes arguments and this 3`] = `"<button onclick=\\"\\">2</button>"`;
+
+exports[`hooks useCallback return value on original handler (return false) 1`] = `"<div onclick=\\"\\"><button onclick=\\"\\">0</button></div>"`;
+
+exports[`hooks useCallback return value on original handler (sanity) 1`] = `"<div onclick=\\"\\"><button onclick=\\"\\">0</button></div>"`;
+
+exports[`hooks useHook 1`] = `"<p>0</p>"`;
+
+exports[`hooks useHook 2`] = `"<p>1</p>"`;
+
+exports[`hooks useHook 3`] = `"<p>2</p>"`;

@@ -1,0 +1,8 @@
+{
+  "files.exclude": {
+    ".husky": true,
+    "coverage": true
+  },
+  "todo-tree.tree.scanMode": "workspace only",
+  "npm-scripts.showStartNotification": false
+}
