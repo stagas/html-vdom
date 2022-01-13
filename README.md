@@ -18,7 +18,7 @@ elegant virtual dom
 ## Install
 
 ```sh
-$ npm i vele
+$ npm i @stagas/vele
 ```
 
 WIP don't use
@@ -35,7 +35,7 @@ WIP don't use
 
 ### useHook
 
-[src/render.ts:187-187](https://github.com/stagas/vele/blob/244197c47b6eb3ffb200ba015fbacb994e199f8f/src/render.ts#L187-L187 "Source code on GitHub")
+[src/render.ts:187-187](https://github.com/stagas/vele/blob/1b2c0e1da248e6e32fbd10bc1d00bba1b0b1536b/src/render.ts#L187-L187 "Source code on GitHub")
 
 Returns a callback that will trigger
 a rerender on the current component.
@@ -52,7 +52,7 @@ Returns **any** The hook callback
 
 ### useCallback
 
-[src/render.ts:207-214](https://github.com/stagas/vele/blob/244197c47b6eb3ffb200ba015fbacb994e199f8f/src/render.ts#L207-L214 "Source code on GitHub")
+[src/render.ts:207-214](https://github.com/stagas/vele/blob/1b2c0e1da248e6e32fbd10bc1d00bba1b0b1536b/src/render.ts#L207-L214 "Source code on GitHub")
 
 Wraps a function along with a hook
 so when called will also trigger that hook.
