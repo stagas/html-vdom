@@ -1,4 +1,4 @@
-import { h, Fragment, render, current, VHook } from '..'
+import { Fragment, VHook, current, h, render } from '..'
 
 let c: HTMLDivElement
 
@@ -636,5 +636,19 @@ describe('render', () => {
       hook_bar.trigger()
       expect(html()).toMatchSnapshot()
     })
+  })
+})
+
+describe('quirky cases', () => {
+  it('pass component in props', () => {
+    let i = 0
+    const Bar = ({ inner }) => (
+      <p>
+        {i++} {inner}
+      </p>
+    )
+    const Foo = ({ Component, children }) => <Component inner={children} />
+    render(<Foo Component={Bar}>hello</Foo>, c)
+    expect(html()).toMatchSnapshot()
   })
 })

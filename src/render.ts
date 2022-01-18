@@ -57,6 +57,7 @@ export const renderList = (
     if (node) {
       ctor(atom).update?.(next[i], atom, node)
       if (next[i][2] instanceof VList) renderList(next[i][2], atom, docs.get(next[i][2]) ?? doc)
+      else atom[2] = next[i][2]
     }
 
     // create
