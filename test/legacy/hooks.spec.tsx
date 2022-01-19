@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { h, Fragment, render, current, useHook, useCallback } from '../..'
+import { Fragment, current, h, render, useCallback, useHook } from '../../src'
 
 let c: any
 beforeEach(() => (c = document.createElement('div')))

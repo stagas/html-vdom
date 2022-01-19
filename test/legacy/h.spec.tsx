@@ -1,4 +1,4 @@
-import { h, Fragment, render, current, VHook } from '../..'
+import { Fragment, VHook, current, h, render } from '../../src'
 
 let c: HTMLDivElement
 beforeEach(() => (c = document.createElement('div')))

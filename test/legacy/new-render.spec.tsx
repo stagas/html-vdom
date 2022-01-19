@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { h, Fragment, render, current, VHook } from '../..'
+import { Fragment, VHook, current, h, render } from '../../src'
 
 let c: HTMLDivElement
 

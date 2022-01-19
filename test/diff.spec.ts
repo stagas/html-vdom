@@ -1,5 +1,5 @@
-import { diff } from '../diff'
-import { VList } from '../v'
+import { diff } from '../src/diff'
+import { VList } from '../src/v'
 
 const eq = (a: unknown, b: unknown) => a === b
 

@@ -1,4 +1,4 @@
-import { Fragment, VHook, current, h, render } from '..'
+import { Fragment, VHook, current, h, render } from '../src'
 
 let c: HTMLDivElement
 
@@ -647,7 +647,9 @@ describe('quirky cases', () => {
         {i++} {inner}
       </p>
     )
-    const Foo = ({ Component, children }) => <Component inner={children} />
+    const Foo = ({ Component, children }: { Component: any; children?: any }) => (
+      <Component inner={children} />
+    )
     render(<Foo Component={Bar}>hello</Foo>, c)
     expect(html()).toMatchSnapshot()
   })

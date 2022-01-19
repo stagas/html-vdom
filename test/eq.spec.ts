@@ -1,12 +1,11 @@
-import { diff } from '../diff'
-import { atomEq, domEq } from '../eq'
-import { VList } from '../v'
-import { VAtom } from '../h'
+import { diff } from '../src/diff'
+import { atomEq, domEq } from '../src/eq'
+import { VList } from '../src/v'
 
 // lists
-let parent: VList<VAtom>
-let prev: VAtom[]
-let next: VAtom[]
+let parent: any
+let prev: any
+let next: any
 
 // spies
 let append: jest.SpyInstance

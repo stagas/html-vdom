@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react/jsx-curly-brace-presence */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { h, Fragment, render, current, VHook } from '../..'
+import { Fragment, VHook, current, h, render } from '../../src'
 
 let c: HTMLDivElement
 
@@ -50,7 +50,7 @@ describe('keyed', () => {
       </>
     )
     const Foo = () => (
-      <p align="center">
+      <p>
         {Array.from({ length: 20 + ((Math.random() * 10) | 0) })
           .map((_, i) => <Bar key={i} />)
           .sort(randomly)}

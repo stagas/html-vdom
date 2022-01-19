@@ -1,6 +1,7 @@
+/// <reference lib="esnext" />
 /* eslint-disable react/jsx-curly-brace-presence */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { h, Fragment, render } from '../..'
+import { Fragment, h, render } from '../../src'
 
 let c: any
 beforeEach(() => (c = document.createElement('div')))

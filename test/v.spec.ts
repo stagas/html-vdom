@@ -1,4 +1,4 @@
-import { VList } from '../v'
+import { VList } from '../src/v'
 
 const r1 = '1'
 const r2 = '2'
