@@ -25,10 +25,6 @@ const createProp = (
   // special cases
   switch (name) {
     case 'key':
-    case 'type':
-    case 'tagName':
-    case 'hasProps':
-    case 'children':
       return
     case 'ref':
       if (value) (value as VRef).current = el

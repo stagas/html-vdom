@@ -2,6 +2,8 @@
 
 exports[`quirky cases pass component in props 1`] = `"<p>0 hello</p>"`;
 
+exports[`quirky cases renders input elements correctly 1`] = `"<input type=\\"range\\" min=\\"5\\" max=\\"10\\"><input type=\\"number\\" min=\\"5\\" max=\\"10\\">"`;
+
 exports[`render arrays fragments 1`] = `"<ul><li>a</li><li>b</li><li>c</li></ul>"`;
 
 exports[`render arrays renders 1`] = `"<ul><li>a</li><li>b</li><li>c</li></ul>"`;

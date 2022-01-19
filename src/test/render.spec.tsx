@@ -651,4 +651,15 @@ describe('quirky cases', () => {
     render(<Foo Component={Bar}>hello</Foo>, c)
     expect(html()).toMatchSnapshot()
   })
+
+  it('renders input elements correctly', () => {
+    render(
+      <>
+        <input type="range" min="5" max="10" value="8" />
+        <input type="number" min="5" max="10" value="8" />
+      </>,
+      c
+    )
+    expect(html()).toMatchSnapshot()
+  })
 })
