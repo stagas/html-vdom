@@ -119,14 +119,18 @@ const Ctor: Map<never, NodeFactory> = new Map([
     {
       create(atom: VAtomFunc) {
         const [fn, props, children] = atom
+        const parentHook = current.hook
         current.hook = hooks.get(atom) ?? new VHook(atom)
         atom[2] = new VList(fn({ ...props, children })) as VList<VAtom>
+        current.hook = parentHook
         return new VList()
       },
       update(atom: VAtomFunc, prev: VAtomFunc) {
         const [fn, props, children] = atom
+        const parentHook = current.hook
         current.hook = hooks.get(prev)!
         atom[2] = new VList(fn({ ...props, children })) as VList<VAtom>
+        current.hook = parentHook
       },
     },
   ],
