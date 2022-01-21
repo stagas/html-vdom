@@ -35,7 +35,7 @@ WIP don't use
 
 ### useHook
 
-[src/render.ts:188-188](https://github.com/stagas/vele/blob/2d39f552e6b12f45dc7f3fea06f1336667cba953/src/render.ts#L188-L188 "Source code on GitHub")
+[src/render.ts:243-243](https://github.com/stagas/vele/blob/6d2fb933cdd79c5dc8c4a7ba92171a2910e1da80/src/render.ts#L243-L243 "Source code on GitHub")
 
 Returns a callback that will trigger
 a rerender on the current component.
@@ -52,7 +52,7 @@ Returns **any** The hook callback
 
 ### useCallback
 
-[src/render.ts:208-215](https://github.com/stagas/vele/blob/2d39f552e6b12f45dc7f3fea06f1336667cba953/src/render.ts#L208-L215 "Source code on GitHub")
+[src/render.ts:263-270](https://github.com/stagas/vele/blob/6d2fb933cdd79c5dc8c4a7ba92171a2910e1da80/src/render.ts#L263-L270 "Source code on GitHub")
 
 Wraps a function along with a hook
 so when called will also trigger that hook.
