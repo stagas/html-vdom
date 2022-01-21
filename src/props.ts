@@ -27,7 +27,7 @@ const createProp = (
     case 'key':
       return
     case 'ref':
-      if (value) (value as VRef).current = el
+      if (value) (value as VRef<Element>).current = el
       return
 
     // "value" and "checked" properties have to be set
@@ -133,7 +133,7 @@ export const updateProps = (el: Element, type: string, next: JSXProps = {}) => {
       case 'children':
         continue out
       case 'ref':
-        if (el !== (value as VRef).current) (value as VRef).current = el
+        if (el !== (value as VRef<Element>).current) (value as VRef<Element>).current = el
         continue out
 
       // "value" and "checked" properties change directly on the element when

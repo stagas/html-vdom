@@ -36,6 +36,13 @@ export const diff = <T>(
   // C holds a temp value of the list a that will be compared and maybe inserted
   let C: T | null
 
+  // holds the children that were added
+  const added: T[] = []
+  // holds the children that were updated
+  const updated: T[] = []
+  // holds the children that were removed
+  const removed: T[] = []
+
   // log(b, a)
   let i = 0
 
@@ -95,7 +102,11 @@ export const diff = <T>(
   // insert/append/prepend shortcut
   if (i == p) {
     A = _(a, p)
-    for (; i < n; i++) P.insertBefore(_(b, i)!, A)
+    for (; i < n; i++) {
+      B = _(b, i)!
+      added.push(B)
+      P.insertBefore(B, A)
+    }
     // we are done -- rest of elements (if any) are the same
   } else {
     // replace:
@@ -182,6 +193,7 @@ export const diff = <T>(
         for (x = i; x < p; x++) {
           C = _(P, x)!
           if (eq(B, C)) {
+            updated.push(C!)
             P.insertBefore(C, A)
             continue out
           }
@@ -189,17 +201,28 @@ export const diff = <T>(
         for (x = i; x < n; x++) {
           C = _(b, x)
           if (eq(A, C)) {
+            added.push(B)
             P.insertBefore(B, A)
             continue out
           }
         }
-        if (A) P.replaceChild(B, A)
-        else P.appendChild(B) //, null)
+        if (A) {
+          removed.push(A)
+          added.push(B)
+          P.replaceChild(B, A)
+        } else {
+          added.push(B)
+          P.appendChild(B) //, null)
+        }
       }
     }
     p = len(P)
     i = n
-    while (i++ < p) P.removeChild($(P))
+    while (i++ < p) {
+      A = $(P)
+      removed.push(A!)
+      P.removeChild(A)
+    }
 
     // remove tail:
     //
@@ -222,4 +245,6 @@ export const diff = <T>(
   // if (P instanceof Node) {
   //   log('RESULT', P.innerHTML)
   // } else log('RESULT', [...P])
+
+  return { added, updated, removed }
 }

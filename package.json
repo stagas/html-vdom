@@ -35,7 +35,7 @@
     "build": "npm run build:cjs && npm run build:esm && echo done.",
     "build:cjs": "tsc --outDir dist/cjs",
     "build:esm": "tsc --outDir dist/esm --module esnext && echo '{\"type\":\"module\"}' >dist/esm/package.json",
-    "build:min": "esbuild src/index.ts --bundle --format=esm | terser --compress --module --mangle -o build.min.js",
+    "build:min": "esbuild src/index.ts --bundle --format=esm | terser --compress --module --mangle -o vele.min.js",
     "lint": "eslint src && prettier --check src",
     "lint:fix": "eslint --fix src && prettier --write src",
     "clean": "rimraf dist",

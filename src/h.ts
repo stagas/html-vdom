@@ -29,7 +29,7 @@ declare global {
        * Pass an object that will be assigned the DOM element reference in its `current` property.
        * @private
        */
-      ref?: VRef
+      ref?: VRef<unknown> | null
 
       /**
        * List index key - each item's `key` must be unique.
@@ -46,8 +46,8 @@ declare global {
 
 import { VAtom as VAtomCtor, VList } from './v'
 
-export interface VRef {
-  current?: Element | HTMLElement | SVGElement | null
+export interface VRef<T> {
+  current?: T | null
 }
 
 export const Fragment = Symbol()
