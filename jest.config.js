@@ -1,5 +1,5 @@
 module.exports = {
-  testEnvironment: 'jsdom',
+  testEnvironment: 'jsdom', // or node
   rootDir: '.',
   roots: ['<rootDir>/test/', '<rootDir>/src'],
   testMatch: ['**/*.spec.{js,jsx,ts,tsx}'],
