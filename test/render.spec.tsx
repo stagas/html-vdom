@@ -1,4 +1,4 @@
-import { Fragment, VHook, current, h, render } from '../src'
+import { Fragment, Hook, current, h, render } from '../src'
 
 let c: HTMLDivElement
 
@@ -443,7 +443,7 @@ describe('render', () => {
   describe('hooks', () => {
     it('trigger', () => {
       let i = 0
-      let hook!: VHook
+      let hook!: Hook
       const Foo = () => {
         hook = current.hook!
         return <>{i++}</>
@@ -461,7 +461,7 @@ describe('render', () => {
 
     it('mulitple triggers', () => {
       let i = 0
-      let hook!: VHook
+      let hook!: Hook
       const Foo = () => {
         hook = current.hook!
         return <>{i++}</>
@@ -482,9 +482,9 @@ describe('render', () => {
     })
 
     it('they dont leak', () => {
-      const set: Set<VHook> = new Set()
+      const set: Set<Hook> = new Set()
       let i = 0
-      let hook!: VHook
+      let hook!: Hook
       const Foo = () => {
         hook = current.hook!
         set.add(hook)
@@ -507,10 +507,10 @@ describe('render', () => {
     })
 
     it('deep they dont leak', () => {
-      const set: Set<VHook> = new Set()
+      const set: Set<Hook> = new Set()
       let i = 0
-      let hook!: VHook
-      let hook_foo!: VHook
+      let hook!: Hook
+      let hook_foo!: Hook
       const Bar = () => {
         hook = current.hook!
         set.add(hook)
@@ -540,7 +540,7 @@ describe('render', () => {
 
     it('updates only self', () => {
       let i = 0
-      let hook!: VHook
+      let hook!: Hook
       const Foo = () => {
         hook = current.hook!
         return <>{i++}</>
@@ -564,7 +564,7 @@ describe('render', () => {
 
     it('changes top element', () => {
       let i = 0
-      let hook!: VHook
+      let hook!: Hook
       const Foo = () => {
         hook = current.hook!
         return i % 2 === 0 ? <>{i++}</> : <div>{i++}</div>
@@ -588,7 +588,7 @@ describe('render', () => {
 
     it('changes deeply element', () => {
       let i = 0
-      let hook_bar!: VHook
+      let hook_bar!: Hook
       const Bar = () => {
         hook_bar = current.hook!
         return <>{i++}</>
@@ -610,7 +610,7 @@ describe('render', () => {
 
     it('changes deeply with children', () => {
       let i = 41
-      let hook_bar!: VHook
+      let hook_bar!: Hook
       const Bar = ({ children }: { children?: never }) => {
         hook_bar = current.hook!
         return (

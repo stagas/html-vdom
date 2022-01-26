@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react/jsx-curly-brace-presence */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Fragment, VHook, current, h, render } from '../../src'
+import { Fragment, Hook, current, h, render } from '../../src'
 
 let c: HTMLDivElement
 
@@ -74,7 +74,7 @@ describe('keyed', () => {
   })
 
   it('does not leak hooks', () => {
-    const hooks: Set<VHook> = new Set()
+    const hooks: Set<Hook> = new Set()
     let xx = 1
     const Bar = ({ key }: { key: number }) => {
       hooks.add(current.hook!)

@@ -30,12 +30,10 @@ WIP don't use
 #### Table of Contents
 
 *   [useHook](#usehook)
-*   [useCallback](#usecallback)
-    *   [Parameters](#parameters)
 
 ### useHook
 
-[src/render.ts:243-243](https://github.com/stagas/vele/blob/6d2fb933cdd79c5dc8c4a7ba92171a2910e1da80/src/render.ts#L243-L243 "Source code on GitHub")
+[src/render.ts:251-251](https://github.com/stagas/vele/blob/314cb1b1e28cbeee2f615cac21ae7d85e5b05514/src/render.ts#L251-L251 "Source code on GitHub")
 
 Returns a callback that will trigger
 a rerender on the current component.
@@ -49,30 +47,6 @@ const Foo = () => <>
 ```
 
 Returns **any** The hook callback
-
-### useCallback
-
-[src/render.ts:263-270](https://github.com/stagas/vele/blob/6d2fb933cdd79c5dc8c4a7ba92171a2910e1da80/src/render.ts#L263-L270 "Source code on GitHub")
-
-Wraps a function along with a hook
-so when called will also trigger that hook.
-
-```tsx
-let clicked = 0
-const Foo = () => {
-  const inc = useCallback(() => clicked++)
-  return <>
-    {clicked}
-    <button onclick={inc}>click me</button>
-  </>
-}
-```
-
-#### Parameters
-
-*   `fn` **function (...args: [Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)\<any>): void** Any function to wrap with the hook
-
-Returns **any** The callback function
 
 ## Contribute
 

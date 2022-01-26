@@ -1,4 +1,4 @@
-import { Fragment, VHook, current, h, render } from '../../src'
+import { Fragment, Hook, current, h, render } from '../../src'
 
 let c: HTMLDivElement
 beforeEach(() => (c = document.createElement('div')))
@@ -119,7 +119,7 @@ describe('render', () => {
   describe('hook', () => {
     it('updates', () => {
       let i = 0
-      let hook!: VHook
+      let hook!: Hook
       const Foo = () => {
         hook = current.hook!
         return <>{i++}</>
@@ -132,8 +132,8 @@ describe('render', () => {
 
     it('is the same hook', () => {
       let i = 0
-      let hook!: VHook
-      const hooks: Set<VHook> = new Set()
+      let hook!: Hook
+      const hooks: Set<Hook> = new Set()
       const Foo = () => {
         hook = current.hook!
         hooks.add(hook)
@@ -152,8 +152,8 @@ describe('render', () => {
 
     it('works with nested', () => {
       let i = 0
-      let hook!: VHook
-      const hooks: Set<VHook> = new Set()
+      let hook!: Hook
+      const hooks: Set<Hook> = new Set()
       const Bar = () => {
         hook = current.hook!
         hooks.add(hook)

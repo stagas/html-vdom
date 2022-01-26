@@ -3,7 +3,7 @@
   "author": "stagas",
   "short": "stagas/vele",
   "description": "elegant virtual dom",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -52,13 +52,13 @@
     "@swc-node/jest": "^1.4.3",
     "@tsconfig/node16": "^1.0.2",
     "@types/jest": "^27.4.0",
-    "@types/node": "^17.0.10",
-    "@typescript-eslint/eslint-plugin": "^5.10.0",
-    "@typescript-eslint/parser": "^5.10.0",
+    "@types/node": "^17.0.12",
+    "@typescript-eslint/eslint-plugin": "^5.10.1",
+    "@typescript-eslint/parser": "^5.10.1",
     "@web/dev-server-esbuild": "^0.2.16",
-    "@web/dev-server-rollup": "^0.3.14",
-    "@web/test-runner": "^0.13.25",
-    "esbuild": "^0.14.12",
+    "@web/dev-server-rollup": "^0.3.15",
+    "@web/test-runner": "^0.13.26",
+    "esbuild": "^0.14.14",
     "esbuild-register": "^3.3.2",
     "eslint": "^8.7.0",
     "eslint-config-html-jsx": "^1.0.0",
@@ -78,6 +78,7 @@
   },
   "dependencies": {
     "camelcase-to-kebab": "^1.0.0",
-    "html-jsx": "^0.2.2"
+    "html-jsx": "^0.2.3",
+    "virtual-state": "^0.0.2"
   }
 }

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Fragment, VHook, current, h, render } from '../../src'
+import { Fragment, Hook, current, h, render } from '../../src'
 
 let c: HTMLDivElement
 
@@ -49,7 +49,7 @@ describe('render', () => {
     })
 
     it('single: trigger hook', () => {
-      let hook!: VHook
+      let hook!: Hook
       let i = 0
       const Foo = () => {
         hook = current.hook!
@@ -64,7 +64,7 @@ describe('render', () => {
     })
 
     it('fragment: trigger hook', () => {
-      let hook!: VHook
+      let hook!: Hook
       let i = 0
       const Foo = () => {
         hook = current.hook!
@@ -79,7 +79,7 @@ describe('render', () => {
     })
 
     it('div then boolean', () => {
-      let hook!: VHook
+      let hook!: Hook
       let i = 0
       const Foo = () => {
         hook = current.hook!
@@ -97,7 +97,7 @@ describe('render', () => {
     })
 
     it('div then nullish', () => {
-      let hook!: VHook
+      let hook!: Hook
       let i = 0
       const Foo = () => {
         hook = current.hook!
@@ -115,7 +115,7 @@ describe('render', () => {
     })
 
     it('deep: trigger hook', () => {
-      let hook!: VHook
+      let hook!: Hook
       let i = 0
       const called: string[] = []
       const Bar = () => {
@@ -143,7 +143,7 @@ describe('render', () => {
     })
 
     it('deep fragment: trigger hook', () => {
-      let hook!: VHook
+      let hook!: Hook
       let i = 0
       const called: string[] = []
       const Bar = () => {
@@ -171,7 +171,7 @@ describe('render', () => {
     })
 
     it('deep fragment: first fragment then div', () => {
-      let hook!: VHook
+      let hook!: Hook
       let i = 0
       const called: string[] = []
       const Bar = () => {
@@ -201,7 +201,7 @@ describe('render', () => {
     })
 
     it('deep fragment: first div then fragment', () => {
-      let hook!: VHook
+      let hook!: Hook
       let i = 0
       const called: string[] = []
       const Bar = () => {
@@ -231,7 +231,7 @@ describe('render', () => {
     })
 
     it('deep fragment: multiple changing children', () => {
-      let hook!: VHook
+      let hook!: Hook
       let i = 0
       const called: string[] = []
       const Bar = () => {

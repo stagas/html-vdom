@@ -623,7 +623,7 @@ describe('hooks', () => {
     expect(clean(c.innerHTML)).toMatchSnapshot()
   })
 
-  it('useCallback', () => {
+  xit('useCallback', () => {
     let fn: any
     let i = 0
     const Foo = () => {
@@ -638,7 +638,7 @@ describe('hooks', () => {
     expect(clean(c.innerHTML)).toMatchSnapshot()
   })
 
-  it('useCallback passes arguments and this', () => {
+  xit('useCallback passes arguments and this', () => {
     let fn: any
     let i = 0
     let target
@@ -667,7 +667,7 @@ describe('hooks', () => {
     expect(self).toBe(button)
   })
 
-  it('useCallback return value on original handler (sanity)', () => {
+  xit('useCallback return value on original handler (sanity)', () => {
     let fn: any
     let i = 0
     let target
@@ -700,7 +700,7 @@ describe('hooks', () => {
     expect(prevented).toBe(false)
   })
 
-  it('useCallback return value on original handler (return false)', () => {
+  xit('useCallback return value on original handler (return false)', () => {
     let fn: any
     let i = 0
     let target
