@@ -3,6 +3,12 @@ import { VList } from './v'
 import { diff } from './diff'
 import { atomEq, domEq } from './eq'
 import { createProps, updateProps } from './props'
+import { Hook, Provider, Value, Collection } from 'virtual-state'
+
+const current: Provider = new Provider()
+export { current }
+export const { useValue, useState, useRef, useEffect, useCallback, useCollection } = current
+export type { Hook, Value, Collection }
 
 // import { inspect } from 'util'
 // const log = (...args: any[]) => console.log(...args.map(x => inspect(x, false, Infinity, true)))
@@ -116,7 +122,7 @@ const toDOM = (view: View): Node[] =>
 
 type Fn = () => void
 
-class VHook {
+class VHook implements Hook {
   #mounted = false
   onmount: Fn | null = null
   onunmount: Fn | null = null
@@ -149,16 +155,6 @@ class VHook {
     this.#mounted = false
     this.onunmount?.()
   }
-}
-
-interface Provider {
-  hook: VHook | null
-}
-
-export let current: Provider = { hook: null }
-
-export const setCurrentProvider = (provider: Provider) => {
-  current = provider
 }
 
 export type { VHook }
@@ -241,33 +237,6 @@ const ctor = (atom: VAtom) => (Ctor.get(typeOf(atom) as never) ?? Ctor.get(Symbo
  * @returns The hook callback
  */
 export const useHook = () => current.hook!.trigger
-
-/**
- * Wraps a function along with a hook
- * so when called will also trigger that hook.
- *
- * ```tsx
- * let clicked = 0
- * const Foo = () => {
- *   const inc = useCallback(() => clicked++)
- *   return <>
- *     {clicked}
- *     <button onclick={inc}>click me</button>
- *   </>
- * }
- * ```
- *
- * @param fn Any function to wrap with the hook
- * @returns The callback function
- */
-export const useCallback = (fn: (...args: unknown[]) => void) => {
-  const hook = useHook()
-  return function (this: unknown, ...args: unknown[]) {
-    const result = fn.apply(this, args)
-    hook()
-    return result
-  }
-}
 
 const xhtml = {
   _xhtml: true,
