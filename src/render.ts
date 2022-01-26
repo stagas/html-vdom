@@ -36,30 +36,44 @@ const attach = (atom: VAtom, node: Node) => {
   atoms.set(node, atom)
 }
 
+interface RenderContext {
+  captured: Set<View>
+  mounted: Set<VAtom>
+  unmounted: Set<VAtom>
+}
+
 export const render = (next: VList<VAtom> | VAtom, target: Node | VAtom) => {
-  mounted.clear()
-  unmounted.clear()
-  const view = renderList(next, target)
-  captured.clear()
-  materialize(view, target as Node)
-  mounted.forEach(mount)
-  unmounted.forEach(unmount)
+  const context: RenderContext = {
+    captured: new Set(),
+    mounted: new Set(),
+    unmounted: new Set(),
+  }
+
+  const view = renderList(context, next, target)
+
+  materialize(context, view, target as Node)
+
+  context.mounted.forEach(mount)
+  context.unmounted.forEach(unmount)
+
+  return context
 }
 
 export const renderList = (
+  context: RenderContext,
   next: VList<VAtom> | VAtom,
   target: Node | VAtom,
   doc: Doc = xhtml
 ): View => {
-  if (!(next instanceof VList)) return renderList(new VList(next), target, doc)
+  if (!(next instanceof VList)) return renderList(context, new VList(next), target, doc)
 
   // get or create the persistent view that will reflect the dom state
   let view = views.get(target)
   if (!view) views.set(target, (view = new VList<VAtom>()))
 
   const { added, removed } = diff(atomEq, view, next, view)
-  added.forEach(x => mounted.add(x))
-  removed.forEach(x => unmounted.add(x))
+  added.forEach(x => context.mounted.add(x))
+  removed.forEach(x => context.unmounted.add(x))
 
   let i = 0
   for (const atom of view) {
@@ -68,14 +82,15 @@ export const renderList = (
     // update
     if (node) {
       ctor(atom).update?.(next[i], atom, node)
-      if (next[i][2] instanceof VList) renderList(next[i][2], atom, docs.get(atom[2]) ?? doc)
+      if (next[i][2] instanceof VList)
+        renderList(context, next[i][2], atom, docs.get(atom[2]) ?? doc)
       else atom[2] = next[i][2]
     }
 
     // create
     else {
       attach(atom, ctor(atom).create(atom, docs.get(view) ?? doc))
-      if (atom[2] instanceof VList) renderList(atom[2], atom, docs.get(atom[2]) ?? doc)
+      if (atom[2] instanceof VList) renderList(context, atom[2], atom, docs.get(atom[2]) ?? doc)
     }
 
     i++
@@ -95,29 +110,26 @@ const triggerFactory = (event: 'mount' | 'unmount') =>
 
 const mount = triggerFactory('mount')
 const unmount = triggerFactory('unmount')
-const mounted: Set<VAtom> = new Set()
-const unmounted: Set<VAtom> = new Set()
 
 const doms: WeakMap<Node, View> = new MapIm()
 const prevs: WeakMap<View, Node[]> = new MapIm()
 const targets: WeakMap<View, Node> = new MapIm()
-const captured: Set<View> = new Set()
 
-const materialize = (view: View, target: Node) => {
+const materialize = (context: RenderContext, view: View, target: Node) => {
   if (!view) return target
   doms.set(target, view)
-  const nextDOM = toDOM(view)
+  const nextDOM = toDOM(context, view)
   const prevDOM = prevs.get(view)
   diff(domEq, <never>target, nextDOM, prevDOM)
   prevs.set(view, nextDOM)
-  captured.add(view)
-  if (target instanceof Node) captured.forEach(view => targets.set(view, target))
+  context.captured.add(view)
+  if (target instanceof Node) context.captured.forEach(view => targets.set(view, target))
   return target
 }
 
-const toDOM = (view: View): Node[] =>
+const toDOM = (context: RenderContext, view: View): Node[] =>
   new VList(
-    ...[...new Set(view.flatten())].map(x => materialize(views.get(x)!, nodes.get(x)!))
+    ...[...new Set(view.flatten())].map(x => materialize(context, views.get(x)!, nodes.get(x)!))
   ).flatten()
 
 type Fn = () => void
@@ -136,14 +148,14 @@ class VHook implements Hook {
 
   trigger = () => {
     if (!this.#mounted) {
-      console.trace(this.atom)
+      console.trace(this)
       throw new Error('Trigger failed: Hook is not mounted')
     }
     const { atom } = this
     const node = nodes.get(atom)!
-    render(atom, node)
+    const context = render(atom, node)
     const target = targets.get(views.get(atom)!)!
-    materialize(doms.get(target)!, target)
+    materialize(context, doms.get(target)!, target)
   }
 
   mount = () => {
