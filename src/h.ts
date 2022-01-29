@@ -69,21 +69,17 @@ export const h: JSXPragma = (kind, props, ...children) =>
 export type VAtom = [JSXKind, JSXProps, VList<VAtom>]
 
 const toAtom = (child: JSXChild) => {
-  if (child == null)
-    //return // new VAtomCtor()
-    return new VAtomCtor(<never>Comment) as VAtom
+  if (child == null) return new VAtomCtor(<never>Comment) as VAtom
 
   switch (typeof child) {
     case 'boolean':
       return new VAtomCtor(<never>Comment) as VAtom
-    // return false //new VAtomCtor() //return new VAtomCtor(<never>Comment)
     case 'string':
     case 'number':
       return new VAtomCtor(<never>Text, null, <never>child) as VAtom
     case 'object':
       if (Array.isArray(child) && !(child instanceof VAtomCtor))
         return h(Fragment, null, ...(child as JSXReturn[]))
-    //Array === child?.constructor) return h(Fragment, null, ...(child as JSXReturn[]))
   }
 
   return child

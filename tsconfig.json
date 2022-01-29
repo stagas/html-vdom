@@ -8,12 +8,10 @@
     "files": true
   },
   "include": [
+    "example",
     "src",
+    "test",
     "types"
-  ],
-  "exclude": [
-    "**/*.spec.ts",
-    "**/*.spec.tsx"
   ],
   "compilerOptions": {
     "outDir": "dist/cjs",
@@ -30,11 +28,10 @@
     "inlineSources": true,
     "declaration": true,
     "sourceMap": true,
+    "strict": true,
     "module": "commonjs",
     "target": "esnext",
-    "jsx": "react",
-    "jsxFactory": "h",
-    "jsxFragmentFactory": "Fragment",
-    "strict": true
+    "jsx": "react-jsx",
+    "jsxImportSource": "html-vdom"
   }
 }

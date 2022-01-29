@@ -10,9 +10,6 @@ export { current }
 export const { useValue, useState, useRef, useEffect, useCallback, useCollection } = current
 export type { Hook, Value, Collection }
 
-// import { inspect } from 'util'
-// const log = (...args: any[]) => console.log(...args.map(x => inspect(x, false, Infinity, true)))
-
 type Doc = typeof xhtml
 type View = VList<VAtom>
 type VAtomFunc = VAtom & [JSXFunction, JSXProps, VList<JSXReturn>]
@@ -24,7 +21,7 @@ interface NodeFactory {
   update(next: VAtom, prev: VAtom, node: Node): void
 }
 
-const MapIm = WeakMap // Map | WeakMap
+const MapIm = WeakMap
 const atoms: WeakMap<Node, VAtom> = new MapIm()
 const nodes: WeakMap<VAtom, Node> = new MapIm()
 const views: WeakMap<VAtom | Node, View> = new MapIm()
@@ -234,20 +231,6 @@ const Ctor: Map<never, NodeFactory> = new Map([
 const typeOf = (atom: VAtom) => ((atom[0] as any).prototype ? atom[0] : atom[0].constructor)
 const ctor = (atom: VAtom) => (Ctor.get(typeOf(atom) as never) ?? Ctor.get(Symbol as never))!
 
-/**
- * Returns a callback that will trigger
- * a rerender on the current component.
- *
- * ```tsx
- * let clicked = 0
- * const Foo = () => <>
- *   {clicked++}
- *   <button onclick={useHook()}>click me</button>
- * </>
- * ```
- *
- * @returns The hook callback
- */
 export const useHook = () => current.hook!.trigger
 
 const xhtml = {

@@ -1,4 +1,4 @@
-<h1 align="center">vele</h1>
+<h1 align="center">html-vdom</h1>
 
 <p align="center">
 elegant virtual dom
@@ -8,20 +8,18 @@ elegant virtual dom
    <a href="#install">        🔧 <strong>Install</strong></a>
  · <a href="#example">        🧩 <strong>Example</strong></a>
  · <a href="#api">            📜 <strong>API docs</strong></a>
- · <a href="https://github.com/stagas/vele/releases"> 🔥 <strong>Releases</strong></a>
+ · <a href="https://github.com/stagas/html-vdom/releases"> 🔥 <strong>Releases</strong></a>
  · <a href="#contribute">     💪🏼 <strong>Contribute</strong></a>
- · <a href="https://github.com/stagas/vele/issues">   🖐️ <strong>Help</strong></a>
+ · <a href="https://github.com/stagas/html-vdom/issues">   🖐️ <strong>Help</strong></a>
 </p>
 
-***
+---
 
 ## Install
 
 ```sh
-$ npm i @stagas/vele
+$ npm i html-vdom
 ```
-
-WIP don't use
 
 ## API
 
@@ -29,21 +27,23 @@ WIP don't use
 
 #### Table of Contents
 
-*   [useHook](#usehook)
+- [useHook](#usehook)
 
 ### useHook
 
-[src/render.ts:251-251](https://github.com/stagas/vele/blob/314cb1b1e28cbeee2f615cac21ae7d85e5b05514/src/render.ts#L251-L251 "Source code on GitHub")
+[src/render.ts:251-251](https://github.com/stagas/vele/blob/314cb1b1e28cbeee2f615cac21ae7d85e5b05514/src/render.ts#L251-L251 'Source code on GitHub')
 
 Returns a callback that will trigger
 a rerender on the current component.
 
 ```tsx
 let clicked = 0
-const Foo = () => <>
-  {clicked++}
-  <button onclick={useHook()}>click me</button>
-</>
+const Foo = () => (
+  <>
+    {clicked++}
+    <button onclick={useHook()}>click me</button>
+  </>
+)
 ```
 
 Returns **any** The hook callback

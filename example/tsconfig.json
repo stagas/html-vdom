@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "paths": {
+      "html-vdom": [
+        ".."
+      ],
+      "html-vdom/jsx-runtime": [
+        ".."
+      ]
+    },
+    "jsx": "react-jsx",
+    "jsxImportSource": "html-vdom"
+  }
+}

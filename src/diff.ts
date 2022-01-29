@@ -1,15 +1,9 @@
 import { VList } from './v'
 
-// import { inspect } from 'util'
-// const log = (...args: any[]) => console.log(...args.map(x => inspect(x, false, Infinity, true)))
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type ParentLike = ParentNode | VList<any>
 
 const $ = (P: ParentLike) => (Array.isArray(P) ? P.at(-1) : P.lastChild)
-
-// const nextSibling = <T>(parent: ParentLike<T>, child: T | ChildNode): T | ChildNode | null =>
-//   parent instanceof VList ? parent.nextSiblingOf(child as T) : (child as ChildNode).nextSibling
 
 const _ = <T>(parent: ParentLike | T[], index: number): T | null =>
   Array.isArray(parent)
@@ -25,8 +19,6 @@ export const diff = <T>(
   b: T[],
   a: T[] = []
 ) => {
-  // log(a, b)
-
   // A holds the anchor element where insertBefore(x, A) latches on
   let A: T | null
 
@@ -43,63 +35,14 @@ export const diff = <T>(
   // holds the children that were removed
   const removed: T[] = []
 
-  // log(b, a)
   let i = 0
 
   const n = b.length
   let p = a.length
 
-  //              p
-  // a  1 2 3 4 5
-  //        i
-  // b  1 2 0 4 5
-  //              n
-  // R  1 2
-  //
-  // advance start pointer while equal head
-  // TODO:                     set A B here
   while (i < n && i < p && eq((A = _(a, i)), (B = _(b, i)))) i++
 
-  //          p
-  // a  1 2 3 4 5
-  //        i
-  // b  1 2 0 4 5
-  //          n
-  // R  1 2
-  //
-  // shorten end pointer while equal tail
-  // while (i < n && i < p && eq(_(a, p - 1), _(b, n - 1))) --p, --n
-
-  // insert:
-  //        A
-  //        p
-  // a  1 2 4 5
-  //              i
-  // b  1 2 0 0 0 4 5
-  //              n
-  // R  1 2 0 0 0
-  //
-
-  // append:
-  //          A
-  //          p
-  // a  1 2 3
-  //          i
-  // b  1 2 3 4
-  //            n
-  //
-
-  // prepend:
-  //
-  //    A
-  //    p
-  // a  1 2 3
-  //    i
-  // b  4 1 2 3
-  //      n
-  //
-
-  // insert/append/prepend shortcut
+  // insert/append/prepend
   if (i == p) {
     A = _(a, p)
     for (; i < n; i++) {
@@ -109,84 +52,6 @@ export const diff = <T>(
     }
     // we are done -- rest of elements (if any) are the same
   } else {
-    // replace:
-    //
-    //      A
-    //        p
-    // a  1 2 3
-    //      i
-    // b  1 4 3
-    //        n
-    //      B
-
-    // replace + remaining tail:
-    //
-    //        A
-    //        p
-    // a  1 2 3
-    //        i
-    // b  1 4 5 6 3
-    //            n
-    // R  1 4 3
-    //      B
-
-    //      x
-    //      A
-    //          p
-    // a  1 2 3 4
-    //        i
-    //        C
-    //            y
-    // b  1 3 2 4
-    //          n
-    //            B
-    // R  1 3 2 4
-
-    //      x
-    //      A
-    //            p
-    // a  1 2 3 4
-    //        C
-    //        i
-    //      y
-    // b  1 3 4 2
-    //      B
-    //            n
-    // R  1 3 4 2
-
-    // moves:
-    //
-    //        x
-    //                    p
-    //        A
-    // a  1 2 3 4 5 6 7 8
-    //    i         y
-    //    C
-    // b  3 6 5 1 2 7 8 4
-    //              B
-    //                    n
-    //
-    // R  1 2 3 4 5 6 7 8
-    // R  3 6 5 1 2 4 7 8
-    //
-
-    // let x = i
-    // let y = i
-    // for (; y < n; y++) {
-    //   for (i = y; i < p; i++) {
-    //     C = _(P, i)
-    //     if (eq(C, B)) {
-    //       P.insertBefore(C, A)
-    //       break
-    //     }
-    //     //
-    //   }
-
-    //   while (y < n && x < p && eq((A = _(P, y)), (B = _(b, y)))) x++, y++
-
-    //   //      A = _(P, x)
-    // }
-
     let x = 0
     out: while (((A = _(P, i)!), (B = _(b, i)!), i++ < n)) {
       if (!eq(A, B)) {
@@ -212,7 +77,7 @@ export const diff = <T>(
           P.replaceChild(B, A)
         } else {
           added.push(B)
-          P.appendChild(B) //, null)
+          P.appendChild(B)
         }
       }
     }
@@ -223,28 +88,7 @@ export const diff = <T>(
       removed.push(A!)
       P.removeChild(A)
     }
-
-    // remove tail:
-    //
-    //          p
-    // a  1 2 3
-    //      i
-    // b  1 2
-    //        n
-
-    // remove head:
-    //
-    //      p
-    // a  1 2 3
-    //    i
-    // b  2 3
-    //    n
-    // for (; i < p--; ) P.removeChild(_(P, i))
   }
-
-  // if (P instanceof Node) {
-  //   log('RESULT', P.innerHTML)
-  // } else log('RESULT', [...P])
 
   return { added, updated, removed }
 }

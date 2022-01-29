@@ -4,7 +4,6 @@ import type { JSXProps, VRef } from '.'
 
 const toCssText = (style: CSSStyleDeclaration) => {
   let css = ''
-  // css += (toCssAttr[key] || camelCaseToKebab(key)) + ':' + style[key] + ';'
   for (const key in style) css += camelCaseToKebab(key) + ':' + style[key] + ';'
   return css
 }

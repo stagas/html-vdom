@@ -1,15 +1,16 @@
 {
-  "name": "@stagas/vele",
+  "name": "html-vdom",
   "author": "stagas",
-  "short": "stagas/vele",
-  "description": "elegant virtual dom",
+  "short": "stagas/html-vdom",
+  "description": "html jsx virtual dom",
   "version": "1.0.0",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://git@github.com:stagas/vele.git"
+    "url": "git+https://git@github.com:stagas/html-vdom.git"
   },
   "keywords": [
+    "html",
     "vdom",
     "jsx"
   ],
@@ -19,13 +20,25 @@
     ".": {
       "import": "./dist/esm/index.js",
       "require": "./dist/cjs/index.js"
+    },
+    "./jsx-runtime": {
+      "import": "./dist/esm/jsx-runtime.js",
+      "require": "./dist/cjs/jsx-runtime.js"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "jsx-runtime": [
+        "./dist/cjs/jsx-runtime.d.ts"
+      ]
     }
   },
   "files": [
     "dist"
   ],
   "scripts": {
-    "build:watch": "tsc --outDir dist/esm --module esnext --watch & tsc --outDir dist/cjs --watch",
+    "start": "vite-open example/web.tsx",
+    "build:watch": "tsc -p tsconfig.dist.json --outDir dist/esm --module esnext --watch & tsc -p tsconfig.dist.json --outDir dist/cjs --watch",
     "cov:watch": "jest --coverage --watchAll",
     "test": "npm run test:node && npm run test:web",
     "test:node": "jest",
@@ -33,9 +46,9 @@
     "docs": "documentation readme src --resolve=node --pe ts --re ts --re d.ts --github --section=API --markdown-toc-max-depth=3",
     "cov": "jest --coverage",
     "build": "npm run build:cjs && npm run build:esm && echo done.",
-    "build:cjs": "tsc --outDir dist/cjs",
-    "build:esm": "tsc --outDir dist/esm --module esnext && echo '{\"type\":\"module\"}' >dist/esm/package.json",
-    "build:min": "esbuild src/index.ts --bundle --format=esm | terser --compress --module --mangle -o vele.min.js",
+    "build:cjs": "tsc -p tsconfig.dist.json --outDir dist/cjs",
+    "build:esm": "tsc -p tsconfig.dist.json --outDir dist/esm --module esnext && echo '{\"type\":\"module\"}' >dist/esm/package.json",
+    "build:min": "esbuild src/index.ts --bundle --format=esm | terser --compress --module --mangle -o html-vdom.min.js",
     "lint": "eslint src && prettier --check src",
     "lint:fix": "eslint --fix src && prettier --write src",
     "clean": "rimraf dist",
@@ -52,7 +65,7 @@
     "@swc-node/jest": "^1.4.3",
     "@tsconfig/node16": "^1.0.2",
     "@types/jest": "^27.4.0",
-    "@types/node": "^17.0.12",
+    "@types/node": "^17.0.13",
     "@typescript-eslint/eslint-plugin": "^5.10.1",
     "@typescript-eslint/parser": "^5.10.1",
     "@web/dev-server-esbuild": "^0.2.16",
@@ -74,7 +87,7 @@
     "ts-jest": "^27.1.3",
     "ts-node": "^10.4.0",
     "typescript": "^4.5.5",
-    "vite-open": "^1.1.0"
+    "vite-open": "^1.2.0"
   },
   "dependencies": {
     "camelcase-to-kebab": "^1.0.0",

@@ -13,7 +13,6 @@ export const atomEq = (a: VAtom, b: VAtom) => {
       )
     )
   )
-  // console.log('EQUAL', eq, a, b)
   return eq
 }
 
