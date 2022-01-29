@@ -12,7 +12,7 @@ merge('package.json', (prev, next) => {
 replace('.eslintrc.js')
 replace('.prettierrc')
 replace('jest.config.js')
-replace('tsconfig.json')
+// replace('tsconfig.json')
 replace('tsconfig.dist.json')
 replace('web-test-runner.config.js')
 merge('.vscode/settings.json')
