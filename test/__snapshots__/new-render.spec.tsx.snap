@@ -1,0 +1,103 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`all patch deep move keyed node 1`] = `"<div><li></li><li></li></div>"`;
+
+exports[`all patch deep move keyed node 2`] = `"<div><li></li><li></li></div>"`;
+
+exports[`all patch drop one node 1`] = `"<a></a><b></b><c></c>"`;
+
+exports[`all patch drop one node 2`] = `"<a></a><b></b>"`;
+
+exports[`all patch functional nested drop 1`] = `"<div><p>1</p><p>2</p></div>"`;
+
+exports[`all patch functional nested drop 2`] = `"<div><p>3</p></div>"`;
+
+exports[`all patch functional nested update 1`] = `"<div><p>1</p><p>2</p></div>"`;
+
+exports[`all patch functional nested update 2`] = `"<div><p>3</p><p>4</p></div>"`;
+
+exports[`all patch functional update 1`] = `"<div>0</div>"`;
+
+exports[`all patch functional update 2`] = `"<div>1</div>"`;
+
+exports[`all patch hook is same object 1`] = `"<div>0</div>"`;
+
+exports[`all patch hook is same object 2`] = `"<div>1</div>"`;
+
+exports[`all patch hook is same object 3`] = `"<div>2</div>"`;
+
+exports[`all patch hook onremove 1`] = `"<div>0</div>"`;
+
+exports[`all patch hook onremove 2`] = `"<div>1</div>"`;
+
+exports[`all patch hook onremove 3`] = `""`;
+
+exports[`all patch hook siblings keyed update 1`] = `"<div>0</div><div>1</div>"`;
+
+exports[`all patch hook siblings keyed update 2`] = `"<div>2</div><div>1</div>"`;
+
+exports[`all patch hook siblings update 1`] = `"<div>0</div><div>1</div>"`;
+
+exports[`all patch hook siblings update 2`] = `"<div>2</div><div>1</div>"`;
+
+exports[`all patch hook update 1`] = `"<div>0</div>"`;
+
+exports[`all patch hook update 2`] = `"<div>1</div>"`;
+
+exports[`all patch hook update sibling first undefined 1`] = `"<!---->2"`;
+
+exports[`all patch hook update sibling first undefined 2`] = `"32"`;
+
+exports[`all patch hook update single first undefined 1`] = `"<!---->"`;
+
+exports[`all patch hook update single first undefined 2`] = `"2"`;
+
+exports[`all patch insert text node 1`] = `"<p>hi</p>"`;
+
+exports[`all patch insert text node 2`] = `"<p>hey hi</p>"`;
+
+exports[`all patch keyed two drop first 1`] = `"<a></a><b></b>"`;
+
+exports[`all patch keyed two drop first 2`] = `"<b></b>"`;
+
+exports[`all patch move keyed node 1`] = `"<li></li><li></li>"`;
+
+exports[`all patch move keyed node 2`] = `"<li></li><li></li>"`;
+
+exports[`all patch move outer keyed node 1`] = `"<div><li></li><li></li></div><div><li></li><li></li></div>"`;
+
+exports[`all patch move outer keyed node 2`] = `"<div><li></li><li></li></div><div><li></li><li></li></div>"`;
+
+exports[`all patch replace inner node 1`] = `"<div><p></p></div>"`;
+
+exports[`all patch replace inner node 2`] = `"<div><a></a></div>"`;
+
+exports[`all patch replace node 1`] = `"<div></div>"`;
+
+exports[`all patch replace node 2`] = `"<p></p>"`;
+
+exports[`all patch replace text 1`] = `"<p>hi</p>"`;
+
+exports[`all patch replace text 2`] = `"<p>there</p>"`;
+
+exports[`all patch two drop first 1`] = `"<a></a><b></b>"`;
+
+exports[`all patch two drop first 2`] = `"<b></b>"`;
+
+exports[`all patch two drop one 1`] = `"<a></a><b></b>"`;
+
+exports[`all patch two drop one 2`] = `"<a></a>"`;
+
+exports[`all render fragment 1`] = `"<a></a><b></b>"`;
+
+exports[`all render functional nested 1`] = `"<div><p>a</p><p>b</p></div>"`;
+
+exports[`all render functional simple 1`] = `"<div></div>"`;
+
+exports[`all render multiple text childs 1`] = `"<p>hi there</p>"`;
+
+exports[`all render simple 1`] = `"<div></div>"`;
+
+exports[`all render text child 1`] = `"<p>hi</p>"`;
+
+exports[`all render two levels 1`] = `"<div><p>hi</p></div>"`;

@@ -1,10 +1,12 @@
-import { camelCaseToKebab } from 'camelcase-to-kebab'
+import type { Props } from './jsx-runtime'
 import type { Any, SafeWeakMap } from './types'
-import type { JSXProps, VRef } from '.'
+
+// TODO: module
+const kebab = (s: string) => s.replace(/[a-z](?=[A-Z])|[A-Z]+(?=[A-Z][a-z])/g, '$&-').toLowerCase()
 
 const toCssText = (style: CSSStyleDeclaration) => {
   let css = ''
-  for (const key in style) css += camelCaseToKebab(key) + ':' + style[key] + ';'
+  for (const key in style) css += kebab(key) + ':' + style[key] + ';'
   return css
 }
 
@@ -13,7 +15,7 @@ const createProp = (
   _type: string,
   name: string,
   value: unknown,
-  attrs: Record<string, Attr>
+  attrs: Record<string, Attr>,
 ) => {
   // all the Any's below are on purpose
   // all the cases should be taken care of,
@@ -23,26 +25,28 @@ const createProp = (
 
   // special cases
   switch (name) {
-    case 'key':
-      return
+    case 'children':
     case 'ref':
-      if (value) (value as VRef<Element>).current = el
       return
+    // case 'innerHTML':
+    //   ;(el as any).innerHTML = value
+    //   return
 
     // "value" and "checked" properties have to be set
     // directly on the element when it's an input to
     // properly diff later (see updateProps)
-    case 'value':
-    case 'checked':
-      ;(el as Any)[name] = value
-      return
 
+    // case 'value':
+    // case 'checked':
+    //   ;(el as Any)[name] = (value as any)?.valueOf()
+    //   return
     case 'style':
       // if we createAttribute and set .value then that
       // triggers the css parser and we can't compare if
       // the two values are similar during updates.
       // doing it this way retains the exact string and
       // is faster.
+      value = (value as any)?.valueOf()
       if (typeof value === 'object') value = toCssText(value as CSSStyleDeclaration)
       el.setAttribute('style', value as string)
       // we know there is an attribute node because we
@@ -60,66 +64,94 @@ const createProp = (
   // probability we will need a version that
   // normalizes attribute names we leave it here
   // commented (attr)
-  const attr = name //toAttr[name] || name
+  const attr = name // toAttr[name] || name
+
+  value = (value as any)?.valueOf()
 
   switch (typeof value) {
     case 'string':
     case 'number':
-      el.setAttribute(attr, value as string)
-      attrs[attr] = el.getAttributeNode(attr)!
-      return
+      if (!(name in el)) {
+        el.setAttribute(attr, value as string)
+        attrs[attr] = el.getAttributeNode(attr)!
+        return
+      }
+      break
     case 'function':
       el.setAttribute(attr, '')
-      attrs[attr] = el.getAttributeNode(attr)!
+      attrs[attr] = el.getAttributeNode(attr)! // TODO: support value.passive, value.capture, value.once etc
+       // needs a different algorithm/way of setting/removing handlers with
+      // addEventListener/removeEventListener instead
       ;(el as Any)[name] = value
       return
-    case 'boolean':
-      if (value) {
-        el.setAttribute(attr, '')
-        attrs[attr] = el.getAttributeNode(attr)!
-      }
-      return
-    default:
-      if (value != null) {
-        try {
-          ;(el as Any)[name] = value
-        } catch {
-          //
-        }
-      }
+      // case 'boolean':
+      // if (name in el) {
+      // (el as Any)[name] = value
+      // } else {
+      // if (value) {
+      //   //     el.setAttribute(attr, '')
+      //   //     attrs[attr] = el.getAttributeNode(attr)!
+      //   //   }
+      //   // }
+      //   return
   }
+
+  ;(el as Any)[name] = value
+  if (el.hasAttribute(attr))
+    attrs[attr] = el.getAttributeNode(attr)!
+  //   case 'boolean':
+  //     // if (name in el) {
+  //     (el as Any)[name] = value
+  //     // } else {
+  //     //   if (value) {
+  //     //     el.setAttribute(attr, '')
+  //     //     attrs[attr] = el.getAttributeNode(attr)!
+  //     //   }
+  //     // }
+  //     return
+  //   default:
+  //     // if (value != null) {
+  //       // try {
+  //         ;(el as Any)[name] = value
+  //       // } catch {
+  //         //
+  //       // }
+  //     // }
+  // }
 }
 
 type PropCacheItem = {
   attrs: Record<string, Attr>
-  props: JSXProps
+  props: Props
 }
 const propCache = new WeakMap() as SafeWeakMap<object, PropCacheItem>
 
 export const createProps = (
   el: Element,
   type: string,
-  props: JSXProps = {},
-  attrs: Record<string, Attr> = {}
+  props: Props = {},
+  attrs: Record<string, Attr> = {},
+  cacheRef: object = el,
 ) => {
   for (const name in props) createProp(el, type, name, props[name], attrs)
-  propCache.set(el, { props, attrs })
+  propCache.set(cacheRef, { props, attrs })
 }
 
-export const updateProps = (el: Element, type: string, next: JSXProps = {}) => {
-  if (!propCache.has(el)) return next && createProps(el, type, next)
+export const updateProps = (el: Element, type: string, next: Props = {}, cacheRef: object = el) => {
+  if (!propCache.has(cacheRef)) return next && createProps(el, type, next, void 0, cacheRef)
 
-  const c = propCache.get(el)
+  const c = propCache.get(cacheRef)
   const { attrs, props } = c
   if (!next) {
     for (const name in attrs) el.removeAttributeNode(attrs[name])
     for (const name in props) delete (el as Any)[name]
-    propCache.delete(el)
+    propCache.delete(cacheRef)
     return
   }
 
   let value
-  out: for (const name in props) {
+  out:
+  for (const name in props) {
     // removed prop
     if (!(name in next)) {
       delete (el as Any)[name]
@@ -130,34 +162,35 @@ export const updateProps = (el: Element, type: string, next: JSXProps = {}) => {
 
     switch (name) {
       case 'children':
-        continue out
       case 'ref':
-        if (el !== (value as VRef<Element>).current) (value as VRef<Element>).current = el
         continue out
+      // case 'innerHTML':
+      //   ;(el as any).innerHTML = value
+      //   continue out
 
       // "value" and "checked" properties change directly on the element when
       // editing an input so we can't diff and have to check it directly
       case 'value':
-      case 'checked':
+        // case 'checked':
         // don't try to update value when element has focus
         // because user is editing and it messes up everything
         // TODO: any way around this?
-        ;(el as Any)[name] !== value && document.activeElement !== el && ((el as Any)[name] = value)
+        value = (value as any)?.valueOf()
+        ;(el as Any)[name] !== value
+          && document.activeElement !== el
+          && ((el as Any)[name] = value)
         continue out
     }
 
-    // updated prop
-    if (props[name] !== value) {
-      if (typeof value === 'function') {
-        const attr = name //toAttr[name] || name
-        props[attr] = (el as Any)[attr] = value
-      } else if (!(name in attrs))
-        // try {
-        (el as Any)[name] = value
-      // } catch {
-      //
-      // }
-    }
+    value = (value as any)?.valueOf() // updated prop
+     // if (props[name] !== value) {
+    //   if (typeof value === 'function') {
+    //     const attr = name // toAttr[name] || name
+    //     props[attr] = (el as Any)[attr] = value
+    //   } else if (!(name in attrs)) {
+    ;(el as Any)[name] = value
+    // }
+    // }
   }
 
   for (const name in attrs) {
@@ -168,7 +201,7 @@ export const updateProps = (el: Element, type: string, next: JSXProps = {}) => {
       continue
     }
 
-    value = next[name]
+    value = (next[name] as any)?.valueOf()
 
     switch (name) {
       case 'style':
@@ -177,12 +210,15 @@ export const updateProps = (el: Element, type: string, next: JSXProps = {}) => {
     }
 
     // updated value
-    if (props![name] !== value && typeof value !== 'function') attrs[name].value = value as string
+    if (props![name] !== value && typeof value !== 'function')
+      attrs[name].value = value as string
   }
 
   // created props
-  for (const name in next)
-    if (!(name in attrs) && !(name in props!)) createProp(el, type, name, next[name], attrs)
+  for (const name in next) {
+    if (!(name in attrs) && !(name in props!))
+      createProp(el, type, name, next[name], attrs)
+  }
 
   c.props = next
 }
