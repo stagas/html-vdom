@@ -270,8 +270,10 @@ const create = (doc: Doc, n: VKid, p?: VKid, pel?: El | null) => {
         }
         // render children
         render(n.props.children, el, doc)
-        // add ref
-        if ('ref' in n.props && el !== n.props.ref.current) n.props.ref.current = el
+        // scheduling to prevent triggering ref effects before this render finishes
+        // TODO: has to be put in a proper queue instead of relying on the microtask
+        if ('ref' in n.props && el !== n.props.ref.current)
+          queueMicrotask(() => n.props.ref.current = el)
       } else {
         let initial = true
         if (!((el = pel!) && (n.hook = (p as VNode<VFn>).hook))) {

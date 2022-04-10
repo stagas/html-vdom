@@ -44,18 +44,20 @@ describe('all', () => {
       expect(html()).toMatchSnapshot()
     })
 
-    it('ref & pass ref', () => {
+    it('ref & pass ref', async () => {
       const ref = { current: null }
       render(<div ref={ref}>hello world</div>, t)
       expect(html()).toMatchSnapshot()
       const el = t.firstChild
+      await Promise.resolve()
       expect(ref.current).toBe(el)
       render(<div ref={ref}>same element</div>, t)
       expect(html()).toMatchSnapshot()
+      await Promise.resolve()
       expect(ref.current).toBe(el)
     })
 
-    it('conditional swap raf', () => {
+    it('conditional swap raf', async () => {
       const refs = {
         a: { current: null },
         b: { current: null },
@@ -63,6 +65,7 @@ describe('all', () => {
       render(<div ref={refs.a}>hello world</div>, t)
       expect(html()).toMatchSnapshot()
       const el = t.firstChild
+      await Promise.resolve()
       render(<p ref={refs.b}>other element</p>, t)
       expect(html()).toMatchSnapshot()
       expect(t.firstChild).not.toBe(el)
@@ -71,7 +74,7 @@ describe('all', () => {
       expect(t.firstChild).toBe(el)
     })
 
-    it('component conditional swap ref', () => {
+    it('component conditional swap ref', async () => {
       const refs = {
         a: { current: null },
         b: { current: null },
@@ -82,6 +85,7 @@ describe('all', () => {
       }
       render(<Foo kind="a" />, t)
       expect(html()).toMatchSnapshot()
+      await Promise.resolve()
       const el = t.firstChild
       render(<Foo kind="b" />, t)
       expect(html()).toMatchSnapshot()
