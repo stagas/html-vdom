@@ -1,4 +1,5 @@
-import type { Props } from './jsx-runtime'
+import { html, svg } from './jsx-runtime'
+import type { Doc, Props } from './jsx-runtime'
 import type { Any, SafeWeakMap } from './types'
 
 // TODO: module
@@ -11,6 +12,7 @@ const toCssText = (style: CSSStyleDeclaration) => {
 }
 
 const createProp = (
+  doc: Doc = html,
   el: Element,
   _type: string,
   name: string,
@@ -71,7 +73,7 @@ const createProp = (
   switch (typeof value) {
     case 'string':
     case 'number':
-      if (!(name in el)) {
+      if (doc === svg || !(name in el)) {
         el.setAttribute(attr, value as string)
         attrs[attr] = el.getAttributeNode(attr)!
         return
@@ -127,18 +129,19 @@ type PropCacheItem = {
 const propCache = new WeakMap() as SafeWeakMap<object, PropCacheItem>
 
 export const createProps = (
+  doc: Doc,
   el: Element,
   type: string,
   props: Props = {},
   attrs: Record<string, Attr> = {},
   cacheRef: object = el,
 ) => {
-  for (const name in props) createProp(el, type, name, props[name], attrs)
+  for (const name in props) createProp(doc, el, type, name, props[name], attrs)
   propCache.set(cacheRef, { props, attrs })
 }
 
-export const updateProps = (el: Element, type: string, next: Props = {}, cacheRef: object = el) => {
-  if (!propCache.has(cacheRef)) return next && createProps(el, type, next, void 0, cacheRef)
+export const updateProps = (doc: Doc, el: Element, type: string, next: Props = {}, cacheRef: object = el) => {
+  if (!propCache.has(cacheRef)) return next && createProps(doc, el, type, next, void 0, cacheRef)
 
   const c = propCache.get(cacheRef)
   const { attrs, props } = c
@@ -183,13 +186,16 @@ export const updateProps = (el: Element, type: string, next: Props = {}, cacheRe
     }
 
     value = (value as any)?.valueOf() // updated prop
-     // if (props[name] !== value) {
-    //   if (typeof value === 'function') {
-    //     const attr = name // toAttr[name] || name
-    //     props[attr] = (el as Any)[attr] = value
-    //   } else if (!(name in attrs)) {
-    ;(el as Any)[name] = value
-    // }
+
+    if (props[name] !== value) {
+      if (typeof value === 'function') {
+        const attr = name // toAttr[name] || name
+        props[attr] = (el as Any)[attr] = value
+      } else if (!(name in attrs)) {
+        // if (!(name in attrs))
+        ;(el as Any)[name] = value
+      }
+    }
     // }
   }
 
@@ -217,7 +223,7 @@ export const updateProps = (el: Element, type: string, next: Props = {}, cacheRe
   // created props
   for (const name in next) {
     if (!(name in attrs) && !(name in props!))
-      createProp(el, type, name, next[name], attrs)
+      createProp(doc, el, type, name, next[name], attrs)
   }
 
   c.props = next

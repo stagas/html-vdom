@@ -66,7 +66,7 @@ export interface VRef<T> {
 }
 
 type Fn = (...args: any) => any
-type Doc = (tag: string, opts?: ElementCreationOptions) => Element
+export type Doc = (tag: string, opts?: ElementCreationOptions) => Element
 export type VFn = (props: any) => VKid
 type VKid = VKids | VNode<any> | string | number | boolean | null | undefined | void
 type VKids =
@@ -119,9 +119,9 @@ class Chunk extends Array {
   get nextSibling(): El | null | undefined {
     return this.last?.nextSibling
   }
-  insertBefore(x: any) {
-    this.unshift(x)
-  }
+  // insertBefore(x: any) {
+  //   this.unshift(x)
+  // }
   appendChild(x: any) {
     this.push(x)
   }
@@ -136,20 +136,20 @@ class Chunk extends Array {
     this.splice(0)
   }
   removeChild(x: any) {
-    let i = this.indexOf(x)
+    const i = this.indexOf(x)
     ~i && this.splice(i, 1)
-    i = this.dom.indexOf(x)
-    ~i && this.dom.splice(i, 1)
+    // i = this.dom.indexOf(x)
+    // ~i && this.dom.splice(i, 1)
   }
 }
 
 export type { Chunk, VNode }
 
 const { TEXT_NODE, COMMENT_NODE } = document
-const html = document.createElement.bind(document)
-const svg = document.createElementNS.bind(document, 'http://www.w3.org/2000/svg')
+export const html = document.createElement.bind(document)
+export const svg = document.createElementNS.bind(document, 'http://www.w3.org/2000/svg')
 const forceArray = <T>(x: any, withNull: boolean): T =>
-  (Array.isArray(x) ? x : x == null && !withNull ? [] : [x]) as unknown as T
+  (Array.isArray(x) ? (withNull && !x.length ? [null] : x) : x == null && !withNull ? [] : [x]) as unknown as T
 const flatDom = (arr: El[], res: DomEl[] = []) => {
   for (const el of arr) {
     if ((el as Chunk).dom) res.push(...flatDom((el as Chunk).dom!))
@@ -218,11 +218,27 @@ const reconcile = (parent: TargetEl, nk: VKids, pk: VKids | VKid, doc: Doc) => {
 }
 
 const diff = (parent: TargetEl, n: DomEl[], p: DomEl[], i = 0, len = n.length, el?: DomEl, last?: DomEl) => {
-  for (; i < len; i++) {
-    el = n[i]
-    if (p[i] === el) last = el
-    else if (!i) parent.insertBefore(last = el, parent.firstChild)
-    else last!.after(last = el)
+  if (parent instanceof Chunk) {
+    // parent.splice(0) // , parent.length, ...n)
+    // TODO: optimize this
+    for (; i < len; i++) {
+      el = n[i]
+      if (i < parent.length) {
+        if (p[i] === el) continue
+        parent[i] = el
+      } else {
+        parent.push(el)
+      }
+    }
+    let d = parent.length - len
+    while (d--) parent.pop()
+  } else {
+    for (; i < len; i++) {
+      el = n[i]
+      if (p[i] === el) last = el
+      else if (!i) parent.insertBefore(last = el, parent.firstChild)
+      else last!.after(last = el)
+    }
   }
 }
 
@@ -246,6 +262,7 @@ const create = (doc: Doc, n: VKid, p?: VKid, pel?: El | null) => {
         el.save()
       } else if (typeof n.kind === 'string') {
         // maybe switch to svg namespace
+        if (n.kind === 'svg') doc = svg
         if (
           ( // if we pass explicit element reference, and is the right tag, use that
             n.props.ref?.current
@@ -254,20 +271,19 @@ const create = (doc: Doc, n: VKid, p?: VKid, pel?: El | null) => {
           ) || (
             // if the previous element is of the same kind, use that
             pel
-            && (p as VNode<string>).kind === n.kind
+            && (p as VNode<string>)?.kind === n.kind
             && (el = pel)
           )
         ) {
           // only update props if we have the element
-          updateProps(el as Element, n.kind, n.props)
+          updateProps(doc, el as Element, n.kind, n.props)
         } else {
-          if (n.kind === 'svg') doc = svg
           // otherwise create an element and props
           el = doc(n.kind, 'is' in n.props ? { is: n.props.is } : void 0)
-          // maybe switch to xhtml namespace
-          if (n.kind === 'foreignObject') doc = html
-          createProps(el as Element, n.kind, n.props)
+          createProps(doc, el as Element, n.kind, n.props)
         }
+        // maybe switch to xhtml namespace
+        if (n.kind === 'foreignObject') doc = html
         // render children
         render(n.props.children, el, doc)
         // scheduling to prevent triggering ref effects before this render finishes
@@ -282,18 +298,9 @@ const create = (doc: Doc, n: VKid, p?: VKid, pel?: El | null) => {
         }
         n.hook(() => {
           let next!: ChildNode | null
-          // next = el!.nextSibling as ChildNode
-          // initial = true
-          // const parent = (el as any)!.parentNode
           if (!initial && !(next = el!.nextSibling as ChildNode)) el!.after(next = anchor)
-          // el?.remove()
-          // ;(el as Chunk)!.dom!.splice(0)
-          // ;(el as Chunk).splice(0)
-          // }
-          // console.log('P', el)
           render(n.kind(n.props), el!, doc, true)
           ;(el as Chunk).save()
-          // console.log(el)
           if (!initial && next) {
             for (const e of flatDom(el as Chunk)) next!.before(e)
             next === anchor && next.remove()

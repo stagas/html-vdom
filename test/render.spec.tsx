@@ -747,6 +747,39 @@ describe('all', () => {
       expect(childs).toMatchObject(['(hello)', '(hello)', '(hello)'])
       expect(html()).toMatchSnapshot()
     })
+
+    it('less then many then less', () => {
+      let h!: Hook
+      let count = 5
+      const Foo = () => {
+        h = hook
+        const evens = []
+        const odds = []
+        for (let i = 0; i < count; i++) {
+          if (i % 2 === 0)
+            evens.push(<p key={i}>{i}</p>)
+          else
+            odds.push(<p key={i}>{i}</p>)
+        }
+        return [[...evens, ...odds]]
+      }
+      render(
+        <>
+          <Foo />
+        </>,
+        t
+      )
+      expect(html()).toMatchSnapshot()
+      count = 10
+      h()
+      expect(html()).toMatchSnapshot()
+      count = 4
+      h()
+      expect(html()).toMatchSnapshot()
+      count = 10
+      h()
+      expect(html()).toMatchSnapshot()
+    })
   })
 
   describe('svg', () => {
@@ -787,6 +820,58 @@ describe('all', () => {
         </svg>,
         t
       )
+      expect(html()).toMatchSnapshot()
+    })
+
+    it('uses correct namespace after hook update', () => {
+      let update!: Hook
+      let pathLength = 50
+      let count = 1
+      const Foo = () => {
+        update = hook
+        return Array(count).fill(0).map(() => <path d="M 0,20 h100" pathLength={pathLength} />)
+      }
+      render(
+        <div>
+          <svg viewBox="0 0 10 10">
+            <Foo />
+          </svg>
+        </div>,
+        t
+      )
+      expect(html()).toMatchSnapshot()
+      pathLength = 100
+      count = 2
+      update()
+      expect(html()).toMatchSnapshot()
+    })
+
+    it('after hook update cached contents', () => {
+      let update!: Hook
+      let pathLength = 50
+      let count = 0
+      let output: any
+      const makeContents = () => {
+        output = Array(count).fill(0).map(() => <path d="M 0,20 h100" pathLength={pathLength} />)
+      }
+      const Foo = () => {
+        update = hook
+        return output
+      }
+      makeContents()
+      render(
+        <>
+          <svg viewBox="0 0 10 10">
+            <Foo />
+          </svg>
+        </>,
+        t
+      )
+      expect(html()).toMatchSnapshot()
+      pathLength = 100
+      count = 2
+      makeContents()
+      update()
       expect(html()).toMatchSnapshot()
     })
   })

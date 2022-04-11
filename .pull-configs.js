@@ -19,7 +19,9 @@ merge('package.json', (prev, next) => {
   // deprecated
   delete prev.devDependencies['@stagas/documentation-fork']
 })
+replace('.gitattributes')
 replace('.gitignore')
+replace('.npmrc')
 replace('.eslintrc.js')
 replace('.pull-configs.js')
 replace('.swcrc')

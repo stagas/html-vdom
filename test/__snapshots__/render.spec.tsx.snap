@@ -1,5 +1,13 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`all quirky cases less then many then less 1`] = `"<p>0</p><p>2</p><p>4</p><p>1</p><p>3</p>"`;
+
+exports[`all quirky cases less then many then less 2`] = `"<p>0</p><p>2</p><p>4</p><p>6</p><p>8</p><p>1</p><p>3</p><p>5</p><p>7</p><p>9</p>"`;
+
+exports[`all quirky cases less then many then less 3`] = `"<p>0</p><p>2</p><p>1</p><p>3</p>"`;
+
+exports[`all quirky cases less then many then less 4`] = `"<p>0</p><p>2</p><p>4</p><p>6</p><p>8</p><p>1</p><p>3</p><p>5</p><p>7</p><p>9</p>"`;
+
 exports[`all quirky cases pass component in props 1`] = `"<p>0 hello</p>"`;
 
 exports[`all quirky cases render children at same position properly 1`] = `"<div>hello 1</div>"`;
@@ -158,6 +166,10 @@ exports[`all return same reference shuffle 1`] = `"123"`;
 
 exports[`all return same reference shuffle 2`] = `"213"`;
 
+exports[`all svg after hook update cached contents 1`] = `"<svg viewBox=\\"0 0 10 10\\"><!----></svg>"`;
+
+exports[`all svg after hook update cached contents 2`] = `"<svg viewBox=\\"0 0 10 10\\"><path d=\\"M 0,20 h100\\" pathLength=\\"100\\"></path><path d=\\"M 0,20 h100\\" pathLength=\\"100\\"></path></svg>"`;
+
 exports[`all svg svg 1`] = `"<svg></svg>"`;
 
 exports[`all svg svg then foreignObject 1`] = `"<svg viewBox=\\"0 0 10 10\\"><path pathLength=\\"90\\"></path><foreignObject><input></foreignObject></svg>"`;
@@ -165,3 +177,7 @@ exports[`all svg svg then foreignObject 1`] = `"<svg viewBox=\\"0 0 10 10\\"><pa
 exports[`all svg svg then foreignObject right attribute casing 1`] = `"<svg viewBox=\\"0 0 10 10\\"><path pathLength=\\"90\\"></path><foreignObject><input autofocus=\\"\\"></foreignObject></svg>"`;
 
 exports[`all svg uses correct namespace 1`] = `"<svg viewBox=\\"0 0 10 10\\"></svg>"`;
+
+exports[`all svg uses correct namespace after hook update 1`] = `"<div><svg viewBox=\\"0 0 10 10\\"><path d=\\"M 0,20 h100\\" pathLength=\\"50\\"></path></svg></div>"`;
+
+exports[`all svg uses correct namespace after hook update 2`] = `"<div><svg viewBox=\\"0 0 10 10\\"><path d=\\"M 0,20 h100\\" pathLength=\\"100\\"></path><path d=\\"M 0,20 h100\\" pathLength=\\"100\\"></path></svg></div>"`;
