@@ -68,7 +68,7 @@ export interface VRef<T> {
 type Fn = (...args: any) => any
 export type Doc = (tag: string, opts?: ElementCreationOptions) => Element
 export type VFn = (props: any) => VKid
-type VKid = VKids | VNode<any> | string | number | boolean | null | undefined | void
+export type VKid = VKids | VNode<any> | string | number | boolean | null | undefined | void
 type VKids =
   & VKid[]
   & Partial<{
