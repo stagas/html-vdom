@@ -74,7 +74,6 @@
   "devDependencies": {
     "@n1kk/intspector": "1.0.2",
     "@stagas/jest-node-exports-resolver": "1.1.5-require-basedir-2",
-    "@stagas/sucrase-jest-plugin": "^2.2.0-fork",
     "@swc-node/jest": "1.4.3",
     "@swc/cli": "0.1.56",
     "@swc/core": "1.2.160",
@@ -98,7 +97,6 @@
     "pull-configs": "^0.2.0",
     "rimraf": "3.0.2",
     "swcno": "0.1.1",
-    "terser": "5.12.1",
     "ts-jest": "27.1.4",
     "ts-node": "10.7.0",
     "typescript": "4.6.3",
@@ -106,7 +104,7 @@
     "wtr-plugin-vite": "^0.0.1"
   },
   "dependencies": {
-    "html-jsx": "^0.3.2"
+    "html-jsx": "^0.3.4"
   },
   "trustedDependencies": [
     "@stagas/jest-node-exports-resolver",
