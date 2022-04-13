@@ -296,13 +296,24 @@ const create = (doc: Doc, n: VKid, p?: VKid, pel?: El | null) => {
           el = new Chunk()
           n.hook = createHook()
         }
+        let prevDom: DomEl[]
+        let nextDom: DomEl[]
         n.hook(() => {
           let next!: ChildNode | null
           if (!initial && !(next = el!.nextSibling as ChildNode)) el!.after(next = anchor)
           render(n.kind(n.props), el!, doc, true)
           ;(el as Chunk).save()
           if (!initial && next) {
-            for (const e of flatDom(el as Chunk)) next!.before(e)
+            nextDom = flatDom(el as Chunk)
+            if (prevDom?.length > 0) {
+              for (let i = 0, e: El; i < nextDom.length; i++) {
+                e = nextDom[i]
+                if (prevDom[i] !== e) next.before(e)
+              }
+            } else {
+              for (const e of nextDom) next.before(e)
+            }
+            prevDom = nextDom
             next === anchor && next.remove()
           } else {
             initial = false
