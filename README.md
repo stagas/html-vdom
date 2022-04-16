@@ -1,5 +1,5 @@
 <h1>
-html-vdom <a href="https://npmjs.org/package/html-vdom"><img src="https://img.shields.io/badge/npm-v2.1.0-F00.svg?colorA=000"/></a> <a href="src"><img src="https://img.shields.io/badge/loc-419-FFF.svg?colorA=000"/></a> <a href="https://cdn.jsdelivr.net/npm/html-vdom@2.1.0/dist/html-vdom.min.js"><img src="https://img.shields.io/badge/brotli-1.8K-333.svg?colorA=000"/></a> <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-F0B.svg?colorA=000"/></a>
+html-vdom <a href="https://npmjs.org/package/html-vdom"><img src="https://img.shields.io/badge/npm-v2.1.1-F00.svg?colorA=000"/></a> <a href="src"><img src="https://img.shields.io/badge/loc-419-FFF.svg?colorA=000"/></a> <a href="https://cdn.jsdelivr.net/npm/html-vdom@2.1.1/dist/html-vdom.min.js"><img src="https://img.shields.io/badge/brotli-1.8K-333.svg?colorA=000"/></a> <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-F0B.svg?colorA=000"/></a>
 </h1>
 
 <p></p>
