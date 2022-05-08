@@ -1,5 +1,25 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`all quirky cases 2 keyed removed and added again 1`] = `"<!---->"`;
+
+exports[`all quirky cases 2 keyed removed and added again 2`] = `"<p>a</p><p>b</p><p>c</p><p>d</p><p>e</p>"`;
+
+exports[`all quirky cases 2 keyed removed and added again 3`] = `"<p>a</p><p>f</p><p>b</p><p>c</p>"`;
+
+exports[`all quirky cases keyed removed and added again 1`] = `"<!---->"`;
+
+exports[`all quirky cases keyed removed and added again 2`] = `"<p>a</p><p>b</p><p>c</p><p>d</p>"`;
+
+exports[`all quirky cases keyed removed and added again 3`] = `"<p>a</p><p>c</p>"`;
+
+exports[`all quirky cases keyed removed and added again 4`] = `"<p>a</p><p>b</p><p>c</p><p>d</p><p>e</p>"`;
+
+exports[`all quirky cases keyed removed and added again 5`] = `"<p>d</p><p>e</p>"`;
+
+exports[`all quirky cases keyed removed and added again 6`] = `"<p>e</p><p>b</p><p>c</p>"`;
+
+exports[`all quirky cases keyed removed and added again 7`] = `"<p>d</p><p>c</p><p>e</p>"`;
+
 exports[`all quirky cases less then many then less 1`] = `"<p>0</p><p>2</p><p>4</p><p>1</p><p>3</p>"`;
 
 exports[`all quirky cases less then many then less 2`] = `"<p>0</p><p>2</p><p>4</p><p>6</p><p>8</p><p>1</p><p>3</p><p>5</p><p>7</p><p>9</p>"`;

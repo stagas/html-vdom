@@ -780,6 +780,127 @@ describe('all', () => {
       h()
       expect(html()).toMatchSnapshot()
     })
+
+    it('keyed removed and added again', async () => {
+      let h!: Hook
+      const outputs = [
+        '',
+        'abcd',
+        'ac',
+        'abcde',
+        'de',
+        'ebc',
+        'dce',
+      ]
+      const refs = new Map()
+      let i = 0
+      const Foo = () => {
+        h = hook
+        const output = outputs[i++]
+        return [
+          output.split('')
+            .map(key => (
+              <p
+                key={key}
+                ref={{
+                  get current() {
+                    return refs.get(key)
+                  },
+                  set current(el) {
+                    refs.set(key, el!)
+                  },
+                }}
+              >
+                {key}
+              </p>
+            )),
+        ]
+      }
+      render(
+        <>
+          <Foo />
+        </>,
+        t
+      )
+      await Promise.resolve()
+      expect(html()).toMatchSnapshot()
+      h()
+      await Promise.resolve()
+      expect(html()).toMatchSnapshot()
+      h()
+      await Promise.resolve()
+      expect(html()).toMatchSnapshot()
+      h()
+      await Promise.resolve()
+      expect(html()).toMatchSnapshot()
+      h()
+      await Promise.resolve()
+      expect(html()).toMatchSnapshot()
+      h()
+      await Promise.resolve()
+      expect(html()).toMatchSnapshot()
+      h()
+      await Promise.resolve()
+      expect(html()).toMatchSnapshot()
+    })
+
+    it('2 keyed removed and added again', async () => {
+      let h!: Hook
+      const outputs = [
+        '',
+        'abcde',
+        'afbc',
+      ]
+      const refs = new Map()
+      let i = 0
+      const Foo = () => {
+        h = hook
+        if (i === 0) return i++, null
+        const output = outputs[i++]
+        return output.split('')
+          .map(key => (
+            <p
+              key={key}
+              ref={{
+                get current() {
+                  return refs.get(key)
+                },
+                set current(el) {
+                  refs.set(key, el!)
+                },
+              }}
+            >
+              {key}
+            </p>
+          ))
+      }
+      render(
+        <>
+          <Foo />
+        </>,
+        t
+      )
+      await Promise.resolve()
+      expect(html()).toMatchSnapshot()
+      h()
+      await Promise.resolve()
+      expect(html()).toMatchSnapshot()
+      h()
+      await Promise.resolve()
+      expect(html()).toMatchSnapshot()
+      // h()
+      // await Promise.resolve()
+      // expect(html()).toMatchSnapshot()
+      // h()
+      // await Promise.resolve()
+      // expect(html()).toMatchSnapshot()
+      // h()
+      // await Promise.resolve()
+      // expect(html()).toMatchSnapshot()
+      // h()
+      // await Promise.resolve()
+      // expect(html()).toMatchSnapshot()
+    })
   })
 
   describe('svg', () => {
