@@ -30,18 +30,7 @@ const createProp = (
     case 'children':
     case 'ref':
       return
-    // case 'innerHTML':
-    //   ;(el as any).innerHTML = value
-    //   return
 
-    // "value" and "checked" properties have to be set
-    // directly on the element when it's an input to
-    // properly diff later (see updateProps)
-
-    // case 'value':
-    // case 'checked':
-    //   ;(el as Any)[name] = (value as any)?.valueOf()
-    //   return
     case 'style':
       // if we createAttribute and set .value then that
       // triggers the css parser and we can't compare if
@@ -86,40 +75,11 @@ const createProp = (
       // addEventListener/removeEventListener instead
       ;(el as Any)[name] = value
       return
-      // case 'boolean':
-      // if (name in el) {
-      // (el as Any)[name] = value
-      // } else {
-      // if (value) {
-      //   //     el.setAttribute(attr, '')
-      //   //     attrs[attr] = el.getAttributeNode(attr)!
-      //   //   }
-      //   // }
-      //   return
   }
 
   ;(el as Any)[name] = value
   if (el.hasAttribute(attr))
     attrs[attr] = el.getAttributeNode(attr)!
-  //   case 'boolean':
-  //     // if (name in el) {
-  //     (el as Any)[name] = value
-  //     // } else {
-  //     //   if (value) {
-  //     //     el.setAttribute(attr, '')
-  //     //     attrs[attr] = el.getAttributeNode(attr)!
-  //     //   }
-  //     // }
-  //     return
-  //   default:
-  //     // if (value != null) {
-  //       // try {
-  //         ;(el as Any)[name] = value
-  //       // } catch {
-  //         //
-  //       // }
-  //     // }
-  // }
 }
 
 type PropCacheItem = {
@@ -167,22 +127,6 @@ export const updateProps = (doc: Doc, el: Element, type: string, next: Props = {
       case 'children':
       case 'ref':
         continue out
-      // case 'innerHTML':
-      //   ;(el as any).innerHTML = value
-      //   continue out
-
-      // "value" and "checked" properties change directly on the element when
-      // editing an input so we can't diff and have to check it directly
-      case 'value':
-        // case 'checked':
-        // don't try to update value when element has focus
-        // because user is editing and it messes up everything
-        // TODO: any way around this?
-        value = (value as any)?.valueOf()
-        ;(el as Any)[name] !== value
-          && document.activeElement !== el
-          && ((el as Any)[name] = value)
-        continue out
     }
 
     value = (value as any)?.valueOf() // updated prop
@@ -192,11 +136,9 @@ export const updateProps = (doc: Doc, el: Element, type: string, next: Props = {
         const attr = name // toAttr[name] || name
         props[attr] = (el as Any)[attr] = value
       } else if (!(name in attrs)) {
-        // if (!(name in attrs))
         ;(el as Any)[name] = value
       }
     }
-    // }
   }
 
   for (const name in attrs) {
