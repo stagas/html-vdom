@@ -15,6 +15,8 @@ module.exports = {
         '--mute-audio',
         '--use-fake-device-for-media-stream',
         '--use-fake-ui-for-media-stream',
+        '--force-dark-mode',
+        '--enable-features=SharedArrayBuffer,WebUIDarkMode',
       ],
     },
   })],

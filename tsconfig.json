@@ -33,6 +33,7 @@
     "isolatedModules": true,
     "inlineSources": true,
     "declaration": true,
+    "noUnusedLocals": true,
     "skipDefaultLibCheck": true,
     "skipLibCheck": true,
     "sourceMap": true,
