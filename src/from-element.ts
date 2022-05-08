@@ -11,7 +11,7 @@ export interface Options<T> extends ElementDefinitionOptions {
 
 export type Component<T, I> = (props: Partial<Omit<T & I, keyof HTMLElement>> & jsxi.HTMLAttributes<T>) => any
 
-export const fromElement = <T extends HTMLElement, I>(
+export const fromElement = <T extends HTMLElement, I = HTMLElement>(
   Element: Constructor<T>,
   options: Options<I> = {},
 ): Component<T, I> => {

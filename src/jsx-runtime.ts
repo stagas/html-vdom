@@ -62,7 +62,7 @@ declare global {
 export type $<T> = (props: T & { children?: any }) => JSX.Element
 
 export interface VRef<T> {
-  current: T
+  current?: T | null | void
 }
 
 type Fn = (...args: any) => any
