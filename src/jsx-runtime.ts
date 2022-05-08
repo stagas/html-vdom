@@ -258,6 +258,7 @@ const create = (doc: Doc, n: VKid, p?: VKid, pel?: El | null) => {
       if (Array.isArray(n)) {
         if (pel && Array.isArray(p)) el = pel as Chunk
         else el = new Chunk()
+        if (!n.length) n.push(null)
         reconcile(el, n, p, doc)
         el.save()
       } else if (typeof n.kind === 'string') {
