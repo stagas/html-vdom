@@ -293,7 +293,7 @@ const create = (doc: Doc, n: VKid, p?: VKid, pel?: El | null) => {
           queueMicrotask(() => n.props.ref.current = el)
       } else {
         let initial = true
-        if (!((el = pel!) && (n.hook = (p as VNode<VFn>).hook))) {
+        if (!((el = pel!) && (n.hook = (p as VNode<VFn>)?.hook))) {
           el = new Chunk()
           n.hook = createHook()
         }
