@@ -184,6 +184,10 @@ const reconcile = (parent: TargetEl, nk: VKids, pk: VKids | VKid, doc: Doc) => {
 
   if (pk === nk) nk = [...nk]
 
+  for (const [i, n] of nk.entries() as any) {
+    nk[i] = n?.valueOf?.()
+  }
+
   prevs.set(parent, nk)
 
   nk.running = true
