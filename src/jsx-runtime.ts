@@ -42,6 +42,16 @@ declare global {
       key?: string | number
 
       /**
+       * Custom hook for when element is created.
+       */
+      onref?: (el: any) => (() => void) | void
+
+      /**
+       * Custom hook for when element is removed.
+       */
+      onunref?: (el: any) => (() => void) | void
+
+      /**
        * Children.
        * @private
        */
@@ -90,6 +100,7 @@ type VNode<T extends string | symbol | typeof Text | typeof Comment | VFn> = {
   key?: string
   hook?: Hook
   keep?: boolean
+  onunref?: () => void
 }
 
 const anchor = new Comment()
@@ -132,7 +143,10 @@ class Chunk extends Array {
     this.dom = [...this]
   }
   remove() {
-    this.dom.forEach(el => el.remove())
+    this.dom.forEach(el => {
+      ;(el as any).onunref?.()
+      el.remove()
+    })
     this.splice(0)
   }
   removeChild(x: any) {
@@ -193,6 +207,7 @@ const reconcile = (parent: TargetEl, nk: VKids, pk: VKids | VKid, doc: Doc) => {
     }
     for (const pel of pk.dom!) {
       if (!keep.has(pel)) {
+        ;(pel as any).onunref?.()
         if (parent instanceof Chunk) parent.removeChild(pel)
         pel.remove()
         ;(pk.mapped!.get(pel) as VNode<VFn>)?.hook?.onremove?.()
@@ -215,6 +230,20 @@ const reconcile = (parent: TargetEl, nk: VKids, pk: VKids | VKid, doc: Doc) => {
     nk.flatDom.forEach(el => parent.appendChild(el))
 
   nk.running = false
+}
+
+// scheduling to prevent triggering ref effects before this render finishes
+// TODO: has to be put in a proper queue instead of relying on the microtask
+const mount = (el: DomEl & { ref: VRef<any>; onref: any; onunref?: any }) => {
+  queueMicrotask(() => {
+    if (el?.ref && el !== el.ref.current) {
+      el.ref.current = el
+    }
+    if (el?.onref) {
+      el.onunref = el.onref(el)
+    }
+  })
+  return el
 }
 
 const diff = (parent: TargetEl, n: DomEl[], p: DomEl[], i = 0, len = n.length, el?: DomEl, last?: DomEl) => {
@@ -287,10 +316,7 @@ const create = (doc: Doc, n: VKid, p?: VKid, pel?: El | null) => {
         if (n.kind === 'foreignObject') doc = html
         // render children
         render(n.props.children, el, doc)
-        // scheduling to prevent triggering ref effects before this render finishes
-        // TODO: has to be put in a proper queue instead of relying on the microtask
-        if ('ref' in n.props && el !== n.props.ref.current)
-          queueMicrotask(() => n.props.ref.current = el)
+        mount(el as any)
       } else {
         let initial = true
         if (!((el = pel!) && (n.hook = (p as VNode<VFn>)?.hook))) {
