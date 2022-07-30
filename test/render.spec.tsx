@@ -493,8 +493,8 @@ describe('all', () => {
         class FooElement extends HTMLElement {}
         const Foo = fromElement(FooElement)
         render(<Foo />, t)
-        expect(html()).toContain('<x-fooelement')
-        expect(html()).toContain('</x-fooelement')
+        expect(html()).toContain('<x-foo')
+        expect(html()).toContain('</x-foo')
       })
     })
 

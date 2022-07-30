@@ -1,5 +1,7 @@
-export * from 'html-jsx'
 import type * as jsxi from 'html-jsx'
+
+export * from 'html-jsx'
+
 import { createProps, updateProps } from './props'
 export { createProps, updateProps }
 
@@ -65,7 +67,8 @@ declare global {
 
     interface HTMLAttributes<T> extends jsxi.HTMLAttributes<T> {}
     interface SVGAttributes<T> extends jsxi.SVGAttributes<T> {}
-    interface DOMAttributes<T> extends jsxi.DOMAttributes<T> {}
+    interface DOMAttributes<T> extends jsxi.DOMAttributes<T> {
+    }
   }
 }
 
@@ -90,7 +93,7 @@ type VKids =
   }>
 type DomEl = Element | CharacterData | ChildNode
 type El = DomEl | Chunk
-type TargetEl = El | ShadowRoot
+type TargetEl = El | DocumentFragment
 type VAny = VNode<any>
 export type Hook = Fn & { fn: Fn; onremove?: Fn } & Record<string, any>
 export type Props = Record<string, any>
@@ -102,12 +105,11 @@ type VNode<T extends string | symbol | typeof Text | typeof Comment | VFn> = {
   keep?: boolean
   onunref?: () => void
 }
-
 const anchor = new Comment()
 export const Fragment = Symbol()
 export const jsx = (kind: any, props: any, key: any) =>
   kind === Fragment
-    ? props.children
+    ? props.children as VKid
     : { kind, props, key } as VNode<typeof kind>
 export const jsxs = jsx
 
@@ -173,8 +175,12 @@ const flatDom = (arr: El[], res: DomEl[] = []) => {
 }
 
 const prevs = new WeakMap()
-export const render = (n: VKid, el: TargetEl, doc: Doc = html, withNull = false) =>
+export function render(n: VKid): DocumentFragment
+export function render(n: VKid, el: TargetEl, doc?: Doc, withNull?: boolean): TargetEl
+export function render(n: VKid, el: TargetEl = document.createDocumentFragment(), doc: Doc = html, withNull = false) {
   reconcile(el, forceArray(n, withNull), prevs.get(el), doc)
+  return el
+}
 
 const reconcile = (parent: TargetEl, nk: VKids, pk: VKids | VKid, doc: Doc) => {
   if ((pk as VKids)?.running) {
