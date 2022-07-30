@@ -1,15 +1,11 @@
-import { html, svg } from './jsx-runtime'
+import type { Any, SafeWeakMap } from 'everyday-types'
 import type { Doc, Props } from './jsx-runtime'
-import type { Any, SafeWeakMap } from './types'
 
-// TODO: module
-const kebab = (s: string) => s.replace(/[a-z](?=[A-Z])|[A-Z]+(?=[A-Z][a-z])/g, '$&-').toLowerCase()
+import { styleToCss } from 'everyday-utils'
+import { html, svg } from './jsx-runtime'
 
-const toCssText = (style: CSSStyleDeclaration) => {
-  let css = ''
-  for (const key in style) css += kebab(key) + ':' + style[key] + ';'
-  return css
-}
+const isEvent = (name: string) => name.charAt(0) === 'o' && name.charAt(1) === 'n' && !name.endsWith('ref')
+const toEvent = (name: string) => name.slice(2) as keyof ElementEventMap
 
 const createProp = (
   doc: Doc = html,
@@ -28,7 +24,7 @@ const createProp = (
   // special cases
   switch (name) {
     case 'children':
-    case 'ref':
+      // case 'ref':
       return
 
     case 'style':
@@ -38,11 +34,13 @@ const createProp = (
       // doing it this way retains the exact string and
       // is faster.
       value = (value as any)?.valueOf()
-      if (typeof value === 'object') value = toCssText(value as CSSStyleDeclaration)
-      el.setAttribute('style', value as string)
-      // we know there is an attribute node because we
-      // just set it
-      attrs.style = el.getAttributeNode('style')!
+      if (typeof value === 'object') value = styleToCss(value as CSSStyleDeclaration)
+      if (value) {
+        el.setAttribute('style', value as string)
+        // we know there is an attribute node because we
+        // just set it
+        attrs.style = el.getAttributeNode('style')!
+      }
       return
   }
 
@@ -69,12 +67,25 @@ const createProp = (
       }
       break
     case 'function':
-      el.setAttribute(attr, '')
-      attrs[attr] = el.getAttributeNode(attr)! // TODO: support value.passive, value.capture, value.once etc
-       // needs a different algorithm/way of setting/removing handlers with
-      // addEventListener/removeEventListener instead
-      ;(el as Any)[name] = value
+      if (isEvent(attr)) {
+        //!? 'create event listener', attr, value
+        el.addEventListener(toEvent(attr), value as EventListener, value as AddEventListenerOptions)
+      } else {
+        //!? 'create function', attr, value
+        el.setAttribute(attr, '')
+        attrs[attr] = el.getAttributeNode(attr)!
+        ;(el as Any)[name] = value
+      }
       return
+  }
+
+  if (value == null) {
+    el.removeAttribute(attr)
+    delete attrs[attr]
+    if ((el as Any)[name] != null) {
+      delete (el as Any)[name]
+    }
+    return
   }
 
   ;(el as Any)[name] = value
@@ -106,17 +117,30 @@ export const updateProps = (doc: Doc, el: Element, type: string, next: Props = {
   const c = propCache.get(cacheRef)
   const { attrs, props } = c
   if (!next) {
-    for (const name in attrs) el.removeAttributeNode(attrs[name])
-    for (const name in props) delete (el as Any)[name]
+    //!? 'disconnected, removing all attrs and props', cacheRef
+    for (const name in attrs) {
+      //!? 'removed attr', name
+      el.removeAttributeNode(attrs[name])
+    }
+    for (const name in props) {
+      if (isEvent(name)) {
+        //!? 'removed event listener', name
+        el.removeEventListener(toEvent(name), props[name], props[name])
+      } else {
+        //!? 'removed prop', name
+        delete (el as Any)[name]
+      }
+    }
     propCache.delete(cacheRef)
     return
   }
 
+  let prev
   let value
   out:
   for (const name in props) {
-    // removed prop
     if (!(name in next)) {
+      //!? 'removed prop', name
       delete (el as Any)[name]
       continue
     }
@@ -125,26 +149,54 @@ export const updateProps = (doc: Doc, el: Element, type: string, next: Props = {
 
     switch (name) {
       case 'children':
-      case 'ref':
+        // case 'style':
+        // case 'ref':
         continue out
     }
 
     value = (value as any)?.valueOf() // updated prop
 
-    if (props[name] !== value) {
+    prev = props[name]
+    if (prev !== value) {
       if (typeof value === 'function') {
-        const attr = name // toAttr[name] || name
-        props[attr] = (el as Any)[attr] = value
+        if (prev.fn && value.fn) {
+          //!? 'updated fn'
+          value = prev.update(value.fn, value.options)
+          if (value === prev) {
+            next[name] = value
+          }
+        }
+
+        if (prev !== value || cacheRef !== el) {
+          let attr = name // toAttr[name] || name
+          if (isEvent(attr)) {
+            attr = toEvent(attr)
+            //!? 'updated event listener', attr, prev, value
+            el.removeEventListener(attr, prev, prev)
+            el.addEventListener(attr, value, value)
+          } else {
+            //!? 'updated function', attr, prev, value
+            props[attr] = (el as Any)[attr] = value
+          }
+        }
       } else if (!(name in attrs)) {
-        ;(el as Any)[name] = value
+        if (value == null) {
+          //!? 'removed prop', name
+          if ((el as Any)[name] != null) {
+            ;(el as Any)[name] = value
+          }
+        } else {
+          //!? 'updated prop', name, prev, value
+          ;(el as Any)[name] = value
+        }
       }
     }
   }
 
   for (const name in attrs) {
-    // removed attribute
     if (!(name in next) || next[name] === false || next[name] == null) {
-      el.removeAttributeNode(attrs[name])
+      //!? 'removed attr', name
+      el.removeAttribute(name) // attrs[name])
       delete attrs[name]
       continue
     }
@@ -153,13 +205,23 @@ export const updateProps = (doc: Doc, el: Element, type: string, next: Props = {
 
     switch (name) {
       case 'style':
-        if (typeof value === 'object') value = toCssText(value as CSSStyleDeclaration)
+        if (typeof value === 'object') value = styleToCss(value as CSSStyleDeclaration) //|| null
         break
     }
 
     // updated value
-    if (props![name] !== value && typeof value !== 'function')
-      attrs[name].value = value as string
+    if (props![name] !== value && typeof value !== 'function') {
+      if (value == null) {
+        if (attrs[name].value != null) {
+          //!? 'removed attr', name
+          el.removeAttribute(name)
+          delete attrs[name]
+        }
+      } else {
+        //!? 'updated attr', name, value
+        attrs[name].value = value as string
+      }
+    }
   }
 
   // created props
