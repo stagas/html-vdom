@@ -1,7 +1,7 @@
 import type { Class } from 'everyday-types'
 
 import { kebab } from 'everyday-utils'
-import * as jsxi from 'html-jsx'
+import type * as jsxi from 'html-jsx'
 
 import { jsx } from './jsx-runtime'
 
@@ -39,7 +39,7 @@ export type Component<T, I> =
     /** Returns the tag name of the component. */
     toString(): string
   }
-  & ((props: Partial<Omit<T & I, keyof HTMLElement>> & jsxi.HTMLAttributes<T>) => JSX.Element)
+  & ((props: Partial<T & I> & jsxi.HTMLAttributes<T>) => JSX.Element)
 
 let suffixKey = 0
 
