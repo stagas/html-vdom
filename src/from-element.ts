@@ -39,7 +39,7 @@ export type Component<T, I> =
     /** Returns the tag name of the component. */
     toString(): string
   }
-  & ((props: Partial<T & I> & jsxi.HTMLAttributes<T>) => JSX.Element)
+  & ((props: Partial<Omit<T & I, keyof HTMLElement>> & jsxi.HTMLAttributes<T>) => JSX.Element)
 
 let suffixKey = 0
 
