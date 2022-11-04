@@ -5,8 +5,6 @@ import type * as jsxi from 'html-jsx'
 
 import { jsx } from './jsx-runtime'
 
-const components: WeakMap<typeof HTMLElement, any> = new WeakMap()
-
 // until a getName() is implemented or similar
 // we polyfill it to capture the tagNames
 // of foreign custom elements
@@ -17,7 +15,7 @@ declare const customElements: CustomElementRegistry & {
 if (!customElements.getName) {
   const tags: WeakMap<typeof HTMLElement, string> = new WeakMap()
   const { define } = customElements
-  customElements.define = function(
+  customElements.define = function (
     name: string,
     ctor: CustomElementConstructor,
     options?: ElementDefinitionOptions,
@@ -25,7 +23,7 @@ if (!customElements.getName) {
     tags.set(ctor, name)
     return define.call(customElements, name, ctor, options)
   }
-  customElements.getName = function(ctor: CustomElementConstructor) {
+  customElements.getName = function (ctor: CustomElementConstructor) {
     return tags.get(ctor)
   }
 }
@@ -34,21 +32,23 @@ export interface Options<T> extends ElementDefinitionOptions {
   interface?: Class<T>
 }
 
+export type ComponentProps<T, I> = Partial<Omit<T & I, keyof HTMLElement>> & jsxi.HTMLAttributes<T>
+
 export type Component<T, I> =
   & {
     /** Returns the tag name of the component. */
     toString(): string
   }
-  & ((props: Partial<Omit<T & I, keyof HTMLElement>> & jsxi.HTMLAttributes<T>) => JSX.Element)
+  & ((props: ComponentProps<T, I>) => JSX.Element)
 
 let suffixKey = 0
 
 export const fromElement = <T extends HTMLElement, I = HTMLElement>(
   ctor: Class<T> & { elementOptions?: Options<I> },
   options: Options<I> = ctor.elementOptions ?? {},
+  defaultProps: ComponentProps<T, I> = {},
 ): Component<T, I> => {
-  let fn: Component<T, I> = components.get(ctor)
-  if (fn) return fn
+  let fn: Component<T, I>
 
   let tag = customElements.getName(ctor)
 
@@ -62,11 +62,9 @@ export const fromElement = <T extends HTMLElement, I = HTMLElement>(
   }
 
   if (options.extends)
-    fn = props => jsx(options.extends, Object.assign(props, { is: tag }), void 0)
+    fn = props => jsx(options.extends, Object.assign({}, defaultProps, props, { is: tag }), void 0)
   else
-    fn = props => jsx(tag, props, void 0)
-
-  components.set(ctor, fn)
+    fn = props => jsx(tag, Object.assign({}, defaultProps, props), void 0)
 
   fn.toString = () => tag!
 

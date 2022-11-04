@@ -101,3 +101,33 @@ exports[`all render simple 1`] = `"<div></div>"`;
 exports[`all render text child 1`] = `"<p>hi</p>"`;
 
 exports[`all render two levels 1`] = `"<div><p>hi</p></div>"`;
+
+exports[`all patch insert keyed node 1`] = `"<li></li><li></li>"`;
+
+exports[`all patch insert keyed node 2`] = `"<li></li><li></li>"`;
+
+exports[`all patch replace keyed node 1`] = `"<li></li><li></li>"`;
+
+exports[`all patch replace keyed node 2`] = `"<li></li><li></li>"`;
+
+exports[`all patch replace multiple keyed node 1`] = `"<li></li><li></li>"`;
+
+exports[`all patch replace multiple keyed node 2`] = `"<li></li><li></li>"`;
+
+exports[`all patch replace multiple keyed node 3`] = `"<li></li><li></li>"`;
+
+exports[`all patch insert replace keyed node 1`] = `"<li></li><li></li>"`;
+
+exports[`all patch insert replace keyed node 2`] = `"<li></li><li></li><li></li>"`;
+
+exports[`all patch insert keyed node svg 1`] = `"<svg><rect></rect><rect></rect></svg>"`;
+
+exports[`all patch insert keyed node svg 2`] = `"<svg><rect></rect><rect></rect></svg>"`;
+
+exports[`all patch move used node 1`] = `"<li></li><li></li>"`;
+
+exports[`all patch move used node 2`] = `"<li></li><li></li>"`;
+
+exports[`all patch move key ref node 1`] = `"<li></li><li></li>"`;
+
+exports[`all patch move key ref node 2`] = `"<li></li><li></li>"`;

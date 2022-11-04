@@ -7,7 +7,7 @@ export { createProps, updateProps }
 
 declare module 'html-jsx' {
   // eslint-disable-next-line
-  interface DOMAttributes<T> extends JSX.IntrinsicAttributes {}
+  interface DOMAttributes<T> extends JSX.IntrinsicAttributes { }
 }
 
 /**
@@ -41,7 +41,7 @@ declare global {
        * List index key - each item's `key` must be unique.
        * @private
        */
-      key?: string | number
+      key?: object | symbol | string | number
 
       /**
        * Custom hook for when element is created.
@@ -65,8 +65,8 @@ declare global {
       innerHTML?: string
     }
 
-    interface HTMLAttributes<T> extends jsxi.HTMLAttributes<T> {}
-    interface SVGAttributes<T> extends jsxi.SVGAttributes<T> {}
+    interface HTMLAttributes<T> extends jsxi.HTMLAttributes<T> { }
+    interface SVGAttributes<T> extends jsxi.SVGAttributes<T> { }
     interface DOMAttributes<T> extends jsxi.DOMAttributes<T> {
     }
   }
@@ -101,11 +101,10 @@ type VNode<T extends string | symbol | typeof Text | typeof Comment | VFn> = {
   kind: T
   props: Props
   key?: string
-  hook?: Hook
+  hook?: Hook | undefined
   keep?: boolean
   onunref?: () => void
 }
-const anchor = new Comment()
 export const Fragment = Symbol()
 export const jsx = (kind: any, props: any, key: any) =>
   kind === Fragment
@@ -146,7 +145,7 @@ class Chunk extends Array {
   }
   remove() {
     this.dom.forEach(el => {
-      ;(el as any).onunref?.()
+      ; (el as any).onunref?.()
       el.remove()
     })
     this.splice(0)
@@ -174,11 +173,11 @@ const flatDom = (arr: El[], res: DomEl[] = []) => {
   return res
 }
 
-const prevs = new WeakMap()
+export const renderCache = new WeakMap()
 export function render(n: VKid): DocumentFragment
 export function render(n: VKid, el: TargetEl, doc?: Doc, withNull?: boolean): TargetEl
 export function render(n: VKid, el: TargetEl = document.createDocumentFragment(), doc: Doc = html, withNull = false) {
-  reconcile(el, forceArray(n, withNull), prevs.get(el), doc)
+  reconcile(el, forceArray(n, withNull), renderCache.get(el), doc)
   return el
 }
 
@@ -190,13 +189,15 @@ const reconcile = (parent: TargetEl, nk: VKids, pk: VKids | VKid, doc: Doc) => {
 
   if (pk === nk) nk = [...nk]
 
+  // ?
+  nk.running = true
+
+  renderCache.set(parent, nk)
+
   for (const [i, n] of nk.entries() as any) {
     nk[i] = n?.valueOf?.()
   }
 
-  prevs.set(parent, nk)
-
-  nk.running = true
   nk.dom = Array(nk.length)
   nk.keyed = new Map()
   nk.mapped = new Map()
@@ -205,7 +206,7 @@ const reconcile = (parent: TargetEl, nk: VKids, pk: VKids | VKid, doc: Doc) => {
     const keep = new Set()
     for (let i = 0, n, el, p, pel, k, pi; i < nk.length; i++) {
       n = nk[pi = i]
-      k = (n as VAny)?.key
+      k = (n as VAny)?.key ?? (n as any)?.ref?.key
       if (k != null) {
         nk.keyed.set(k, i)
         pi = pk.keyed!.get(k) ?? -1
@@ -217,16 +218,18 @@ const reconcile = (parent: TargetEl, nk: VKids, pk: VKids | VKid, doc: Doc) => {
     }
     for (const pel of pk.dom!) {
       if (!keep.has(pel)) {
-        ;(pel as any).onunref?.()
-        if (parent instanceof Chunk) parent.removeChild(pel)
+        ; (pel as any).onunref?.()
+        // TODO: this line commented is breaking things if enabled
+        // and other things break if disabled?
+        // if (parent instanceof Chunk) parent.removeChild(pel)
         pel.remove()
-        ;(pk.mapped!.get(pel) as VNode<VFn>)?.hook?.onremove?.()
+          ; (pk.mapped!.get(pel) as VNode<VFn>)?.hook?.onremove?.()
       }
     }
   } else {
     for (let i = 0, n, el, k; i < nk.length; i++) {
       n = nk[i]
-      k = (n as VAny)?.key
+      k = (n as VAny)?.key ?? (n as any)?.ref?.key
       if (k != null) nk.keyed.set(k, i)
       nk.dom[i] = el = create(doc, n)
       nk.mapped.set(el, n)
@@ -245,14 +248,21 @@ const reconcile = (parent: TargetEl, nk: VKids, pk: VKids | VKid, doc: Doc) => {
 // scheduling to prevent triggering ref effects before this render finishes
 // TODO: has to be put in a proper queue instead of relying on the microtask
 const mount = (el: DomEl & { ref: VRef<any>; onref: any; onunref?: any }) => {
-  queueMicrotask(() => {
-    if (el?.ref && el !== el.ref.current) {
-      el.ref.current = el
-    }
-    if (el?.onref) {
-      el.onunref = el.onref(el)
-    }
-  })
+  if (el?.ref && el !== el.ref.current) {
+    queueMicrotask(() => {
+      if (el.isConnected) {
+        el.ref.current = el
+      }
+    })
+  }
+  if (el?.onref) {
+    queueMicrotask(() => {
+      if (el.isConnected) {
+        el.onunref = el.onref(el)
+      }
+    })
+  }
+
   return el
 }
 
@@ -333,19 +343,31 @@ const create = (doc: Doc, n: VKid, p?: VKid, pel?: El | null) => {
           el = new Chunk()
           n.hook = createHook()
         }
+        const anchor = new Comment()
         let prevDom: DomEl[]
         let nextDom: DomEl[]
         n.hook(() => {
           let next!: ChildNode | null
           if (!initial && !(next = el!.nextSibling as ChildNode)) el!.after(next = anchor)
+          if (typeof n.kind !== 'function') {
+            console.warn('Hook called but node is not a function component.')
+            console.warn(n)
+            return
+          }
           render(n.kind(n.props), el!, doc, true)
-          ;(el as Chunk).save()
+            ; (el as Chunk).save()
           if (!initial && next) {
             nextDom = flatDom(el as Chunk)
             if (prevDom?.length > 0) {
-              for (let i = 0, e: El; i < nextDom.length; i++) {
+              for (let i = 0, last, e: El; i < nextDom.length; i++) {
                 e = nextDom[i]
-                if (prevDom[i] !== e) next.before(e)
+                if (last) {
+                  last.after(last = e)
+                } else if (prevDom[i] !== e) {
+                  next.before(last = e)
+                } else {
+                  last = last && e
+                }
               }
             } else {
               for (const e of nextDom) next.before(e)

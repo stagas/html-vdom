@@ -1,3 +1,4 @@
+// @env browser
 /** @jsxImportSource ../src */
 import { render } from '../src/jsx-runtime'
 

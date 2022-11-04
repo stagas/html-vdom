@@ -1,3 +1,4 @@
+// @env browser
 /** @jsxImportSource ../src */
 import { Hook, hook, render } from '../src/jsx-runtime'
 
@@ -364,6 +365,163 @@ describe('all', () => {
       const res = [...el.querySelectorAll('li')]
       expect(lis[0]).toBe(res[1])
       expect(lis[1]).toBe(res[0])
+    })
+
+    it('move key ref node', () => {
+      const a = { a: true }
+      const b = { b: true }
+
+      const el = r(
+        <>
+          <li key={a} />
+          <li key={b} />
+        </>
+      )
+      const lis = [...el.querySelectorAll('li')]
+      expect(el.innerHTML).toMatchSnapshot()
+      expect(
+        o(
+          <>
+            <li key={b} />
+            <li key={a} />
+          </>,
+          el
+        )
+      ).toMatchSnapshot()
+      const res = [...el.querySelectorAll('li')]
+      expect(lis[0]).toBe(res[1])
+      expect(lis[1]).toBe(res[0])
+    })
+
+    it('insert keyed node', () => {
+      const el = r(
+        <>
+          <li key="a" />
+          <li key="b" />
+        </>
+      )
+      const lis = [...el.querySelectorAll('li')]
+      expect(el.innerHTML).toMatchSnapshot()
+      expect(
+        o(
+          <>
+            <li key="c" />
+            <li key="a" />
+          </>,
+          el
+        )
+      ).toMatchSnapshot()
+      const res = [...el.querySelectorAll('li')]
+      expect(lis[0]).toBe(res[1])
+      expect(lis[1]).not.toBe(res[0])
+    })
+
+    it('insert keyed node svg', () => {
+      const el = r(
+        <svg>
+          <rect key="a" />
+          <rect key="b" />
+        </svg>
+      )
+      const lis = [...el.querySelectorAll('rect')]
+      expect(el.innerHTML).toMatchSnapshot()
+      expect(
+        o(
+          <svg>
+            <rect key="c" />
+            <rect key="a" />
+          </svg>,
+          el
+        )
+      ).toMatchSnapshot()
+      const res = [...el.querySelectorAll('rect')]
+      expect(lis[0]).toBe(res[1])
+      expect(lis[1]).not.toBe(res[0])
+    })
+
+    it('insert replace keyed node', () => {
+      const el = r(
+        <>
+          <li key="a" />
+          <li key="b" />
+        </>
+      )
+      const lis = [...el.querySelectorAll('li')]
+      expect(el.innerHTML).toMatchSnapshot()
+      expect(
+        o(
+          <>
+            <li key="d" />
+            <li key="a" />
+            <li key="c" />
+          </>,
+          el
+        )
+      ).toMatchSnapshot()
+      const res = [...el.querySelectorAll('li')]
+      expect(lis[0]).toBe(res[1])
+    })
+
+    it('replace keyed node', () => {
+      const el = r(
+        <>
+          <li key="a" />
+          <li key="b" />
+        </>
+      )
+      const lis = [...el.querySelectorAll('li')]
+      expect(el.innerHTML).toMatchSnapshot()
+      expect(
+        o(
+          <>
+            <li key="a" />
+            <li key="c" />
+          </>,
+          el
+        )
+      ).toMatchSnapshot()
+      const res = [...el.querySelectorAll('li')]
+      expect(lis[0]).toBe(res[0])
+      expect(lis[1]).not.toBe(res[1])
+    })
+
+    it('replace multiple keyed node', () => {
+      const el = r(
+        <>
+          <li key="a" />
+          <li key="b" />
+        </>
+      )
+      const lis = [...el.querySelectorAll('li')]
+      expect(el.innerHTML).toMatchSnapshot()
+      {
+        expect(
+          o(
+            <>
+              <li key="a" />
+              <li key="c" />
+            </>,
+            el
+          )
+        ).toMatchSnapshot()
+        const res = [...el.querySelectorAll('li')]
+        expect(lis[0]).toBe(res[0])
+        expect(lis[1]).not.toBe(res[1])
+      }
+      {
+        expect(
+          o(
+            <>
+              <li key="b" />
+              <li key="c" />
+            </>,
+            el
+          )
+        ).toMatchSnapshot()
+        const res = [...el.querySelectorAll('li')]
+        expect(lis[1]).not.toBe(res[0])
+        expect(lis[0]).not.toBe(res[1])
+      }
     })
 
     it('deep move keyed node', () => {

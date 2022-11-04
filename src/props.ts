@@ -74,7 +74,7 @@ const createProp = (
         //!? 'create function', attr, value
         el.setAttribute(attr, '')
         attrs[attr] = el.getAttributeNode(attr)!
-        ;(el as Any)[name] = value
+          ; (el as Any)[name] = value
       }
       return
   }
@@ -88,7 +88,7 @@ const createProp = (
     return
   }
 
-  ;(el as Any)[name] = value
+  ; (el as Any)[name] = value
   if (el.hasAttribute(attr))
     attrs[attr] = el.getAttributeNode(attr)!
 }
@@ -159,7 +159,7 @@ export const updateProps = (doc: Doc, el: Element, type: string, next: Props = {
     prev = props[name]
     if (prev !== value) {
       if (typeof value === 'function') {
-        if (prev.fn && value.fn) {
+        if (prev?.fn && value?.fn) {
           //!? 'updated fn'
           value = prev.update(value.fn, value.options)
           if (value === prev) {
@@ -183,11 +183,11 @@ export const updateProps = (doc: Doc, el: Element, type: string, next: Props = {
         if (value == null) {
           //!? 'removed prop', name
           if ((el as Any)[name] != null) {
-            ;(el as Any)[name] = value
+            ; (el as Any)[name] = value
           }
         } else {
           //!? 'updated prop', name, prev, value
-          ;(el as Any)[name] = value
+          ; (el as Any)[name] = value
         }
       }
     }
@@ -218,7 +218,7 @@ export const updateProps = (doc: Doc, el: Element, type: string, next: Props = {
           delete attrs[name]
         }
       } else {
-        //!? 'updated attr', name, value
+        // console.warn('updated attr', name, value)
         attrs[name].value = value as string
       }
     }

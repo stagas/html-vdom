@@ -1,3 +1,4 @@
+// @env browser
 /** @jsxImportSource ../src */
 import { fromElement } from '../src/from-element'
 import { Hook, hook, render } from '../src/jsx-runtime'
@@ -9,7 +10,9 @@ const $ = (sel: string) => t.querySelector(sel)!
 const $$ = (sel: string) => t.querySelectorAll(sel)!
 
 beforeEach(() => {
+  t?.remove?.()
   t = document.createElement('div')
+  document.body.appendChild(t)
 })
 
 describe('all', () => {
@@ -490,7 +493,7 @@ describe('all', () => {
 
     describe('custom element', () => {
       it('using fromElement', () => {
-        class FooElement extends HTMLElement {}
+        class FooElement extends HTMLElement { }
         const Foo = fromElement(FooElement)
         render(<Foo />, t)
         expect(html()).toContain('<x-foo')
@@ -900,6 +903,84 @@ describe('all', () => {
       // h()
       // await Promise.resolve()
       // expect(html()).toMatchSnapshot()
+    })
+
+    it('quirky case', () => {
+      const A = ({ children }: any) => (
+        <a>
+          {children}
+        </a>
+      )
+
+      let state = 1
+      let update: any
+
+      const Foo = () => {
+        update = hook
+        if (state === 1) {
+          return <>
+            {[1, 2, 3].map(x => <A>{x}</A>)}
+            <hr />
+            {[]}
+            {false}
+            <A>last</A>
+          </>
+        }
+        if (state === 2) {
+          return <>
+            {[1, 3].map(x => <A>{x}</A>)}
+            <hr />
+            {[2].map(x => <A>{x}</A>)}
+            <hr />
+            <A>last</A>
+          </>
+        }
+        if (state === 3) {
+          return <>
+            {[]}
+            {false}
+            {[1, 2, 3].map(x => <A>{x}</A>)}
+            <hr />
+            <A>last</A>
+          </>
+        }
+      }
+
+      const Bar = () => <Foo />
+      const Zoo = () => <Bar />
+
+      render(<Zoo />, t)
+      expect(html()).toEqual('<a>1</a><a>2</a><a>3</a><hr><!----><!----><a>last</a>')
+
+      state = 2
+      update()
+      render(<Zoo />, t)
+      expect(html()).toEqual('<a>1</a><a>3</a><hr><a>2</a><hr><a>last</a>')
+
+      state = 3
+      update()
+      render(<Zoo />, t)
+      expect(html()).toEqual('<!----><!----><a>1</a><a>2</a><a>3</a><hr><a>last</a>')
+
+      state = 2
+      update()
+      render(<Zoo />, t)
+      expect(html()).toEqual('<a>1</a><a>3</a><hr><a>2</a><hr><a>last</a>')
+
+      state = 1
+      update()
+      render(<Zoo />, t)
+      expect(html()).toEqual('<a>1</a><a>2</a><a>3</a><hr><!----><!----><a>last</a>')
+
+      state = 2
+      update()
+      render(<Zoo />, t)
+      expect(html()).toEqual('<a>1</a><a>3</a><hr><a>2</a><hr><a>last</a>')
+
+      state = 3
+      update()
+      render(<Zoo />, t)
+      expect(html()).toEqual('<!----><!----><a>1</a><a>2</a><a>3</a><hr><a>last</a>')
     })
   })
 

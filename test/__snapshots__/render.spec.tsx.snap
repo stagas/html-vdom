@@ -201,3 +201,25 @@ exports[`all svg uses correct namespace 1`] = `"<svg viewBox=\\"0 0 10 10\\"></s
 exports[`all svg uses correct namespace after hook update 1`] = `"<div><svg viewBox=\\"0 0 10 10\\"><path d=\\"M 0,20 h100\\" pathLength=\\"50\\"></path></svg></div>"`;
 
 exports[`all svg uses correct namespace after hook update 2`] = `"<div><svg viewBox=\\"0 0 10 10\\"><path d=\\"M 0,20 h100\\" pathLength=\\"100\\"></path><path d=\\"M 0,20 h100\\" pathLength=\\"100\\"></path></svg></div>"`;
+
+exports[`all quirky cases quirky case 1`] = `"<a>1</a><a>2</a><a>3</a><!----><a>last</a>"`;
+
+exports[`all quirky cases quirky case 1`] = `"<a>1</a><a>2</a><a>3</a><hr><!----><a>last</a>"`;
+
+exports[`all quirky cases quirky case 2`] = `"<a>1</a><a>3</a><hr><a>2</a><hr><a>last</a>"`;
+
+exports[`all quirky cases quirky case 1`] = `"<a>1</a><a>2</a><a>3</a><hr><!----><!----><a>last</a>"`;
+
+exports[`all quirky cases quirky case 2`] = `"<a>1</a><a>3</a><hr><a>2</a><hr><a>last</a>"`;
+
+exports[`all quirky cases quirky case 3`] = `"<a>1</a><a>2</a><a>3</a><hr><!----><!----><a>last</a>"`;
+
+exports[`all quirky cases quirky case 1`] = `"<a>1</a><a>2</a><a>3</a><hr><!----><!----><a>last</a>"`;
+
+exports[`all quirky cases quirky case 2`] = `"<a>1</a><a>3</a><hr><a>2</a><hr><a>last</a>"`;
+
+exports[`all quirky cases quirky case 3`] = `"<a>1</a><a>3</a><hr><a>2</a><hr><a>last</a>"`;
+
+exports[`all quirky cases quirky case 4`] = `"<a>1</a><a>2</a><a>3</a><hr><!----><!----><a>last</a>"`;
+
+exports[`all quirky cases quirky case 5`] = `"<a>1</a><a>2</a><a>3</a><hr><!----><!----><a>last</a>"`;

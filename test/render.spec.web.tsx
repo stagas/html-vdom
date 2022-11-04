@@ -1,3 +1,5 @@
+// @env browser
+
 /** @jsxImportSource ../src */
 // import { fromElement } from '../src/from-element'
 import { render } from '../src/jsx-runtime'
