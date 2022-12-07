@@ -4,23 +4,29 @@ import type { Doc, Props } from './jsx-runtime'
 import { styleToCss } from 'everyday-utils'
 import { html, svg } from './jsx-runtime'
 
-const isEvent = (name: string) => name.charAt(0) === 'o' && name.charAt(1) === 'n' && !name.endsWith('ref')
-const toEvent = (name: string) => name.slice(2) as keyof ElementEventMap
+function isEvent(name: string) {
+  return name.charAt(0) === 'o' && name.charAt(1) === 'n' && !name.endsWith('ref')
+}
+function toEvent(name: string) {
+  return name.slice(2) as keyof ElementEventMap
+}
+function isCustomEl(el: Element) {
+  return el.tagName.includes('-')
+}
 
-const createProp = (
-  doc: Doc = html,
+function createProp(doc: Doc = html,
   el: Element,
   _type: string,
   name: string,
   value: unknown,
   attrs: Record<string, Attr>,
-) => {
+  isCustom: boolean
+) {
   // all the Any's below are on purpose
   // all the cases should be taken care of,
   // but since this is user input they are allowed
   // to do something wrong and we want to raise an
   // exception and get a stack trace back here.
-
   // special cases
   switch (name) {
     case 'children':
@@ -34,7 +40,8 @@ const createProp = (
       // doing it this way retains the exact string and
       // is faster.
       value = (value as any)?.valueOf()
-      if (typeof value === 'object') value = styleToCss(value as CSSStyleDeclaration)
+      if (typeof value === 'object')
+        value = styleToCss(value as CSSStyleDeclaration)
       if (value) {
         el.setAttribute('style', value as string)
         // we know there is an attribute node because we
@@ -47,7 +54,6 @@ const createProp = (
   //
   // create prop
   //
-
   // we used to normalize the attribute name
   // but now we don't. because there is a high
   // probability we will need a version that
@@ -57,10 +63,12 @@ const createProp = (
 
   value = (value as any)?.valueOf()
 
+  const isAttr = !isCustom || ['class'].includes(name)
+
   switch (typeof value) {
     case 'string':
     case 'number':
-      if (doc === svg || !(name in el)) {
+      if (doc === svg || (isAttr && !(name in el))) {
         el.setAttribute(attr, value as string)
         attrs[attr] = el.getAttributeNode(attr)!
         return
@@ -71,51 +79,60 @@ const createProp = (
         //!? 'create event listener', attr, value
         el.addEventListener(toEvent(attr), value as EventListener, value as AddEventListenerOptions)
       } else {
-        //!? 'create function', attr, value
-        el.setAttribute(attr, '')
-        attrs[attr] = el.getAttributeNode(attr)!
-          ; (el as Any)[name] = value
+        if (isAttr) {
+          //!? 'create function', attr, value
+          el.setAttribute(attr, '')
+          attrs[attr] = el.getAttributeNode(attr)!
+        }
+        ; (el as Any)[name] = value
       }
       return
   }
 
   if (value == null) {
-    el.removeAttribute(attr)
-    delete attrs[attr]
+    if (isAttr) {
+      el.removeAttribute(attr)
+      delete attrs[attr]
+    }
     if ((el as Any)[name] != null) {
       delete (el as Any)[name]
     }
     return
   }
 
-  ; (el as Any)[name] = value
-  if (el.hasAttribute(attr))
+  ; (el as Any)[name] = value === 'false' ? false : value
+
+  if (isAttr && el.hasAttribute(attr))
     attrs[attr] = el.getAttributeNode(attr)!
 }
 
 type PropCacheItem = {
   attrs: Record<string, Attr>
   props: Props
+  isCustom: boolean
 }
 const propCache = new WeakMap() as SafeWeakMap<object, PropCacheItem>
 
-export const createProps = (
-  doc: Doc,
+export function createProps(doc: Doc,
   el: Element,
   type: string,
   props: Props = {},
   attrs: Record<string, Attr> = {},
-  cacheRef: object = el,
-) => {
-  for (const name in props) createProp(doc, el, type, name, props[name], attrs)
-  propCache.set(cacheRef, { props, attrs })
+  cacheRef: object = el) {
+  const isCustom = isCustomEl(el)
+
+  for (const name in props)
+    createProp(doc, el, type, name, props[name], attrs, isCustom)
+
+  propCache.set(cacheRef, { props, attrs, isCustom })
 }
 
-export const updateProps = (doc: Doc, el: Element, type: string, next: Props = {}, cacheRef: object = el) => {
-  if (!propCache.has(cacheRef)) return next && createProps(doc, el, type, next, void 0, cacheRef)
+export function updateProps(doc: Doc, el: Element, type: string, next: Props = {}, cacheRef: object = el) {
+  if (!propCache.has(cacheRef))
+    return next && createProps(doc, el, type, next, void 0, cacheRef)
 
   const c = propCache.get(cacheRef)
-  const { attrs, props } = c
+  const { attrs, props, isCustom } = c
   if (!next) {
     //!? 'disconnected, removing all attrs and props', cacheRef
     for (const name in attrs) {
@@ -137,8 +154,7 @@ export const updateProps = (doc: Doc, el: Element, type: string, next: Props = {
 
   let prev
   let value
-  out:
-  for (const name in props) {
+  out: for (const name in props) {
     if (!(name in next)) {
       //!? 'removed prop', name
       delete (el as Any)[name]
@@ -187,7 +203,7 @@ export const updateProps = (doc: Doc, el: Element, type: string, next: Props = {
           }
         } else {
           //!? 'updated prop', name, prev, value
-          ; (el as Any)[name] = value
+          ; (el as Any)[name] = value === 'false' ? false : value
         }
       }
     }
@@ -205,7 +221,8 @@ export const updateProps = (doc: Doc, el: Element, type: string, next: Props = {
 
     switch (name) {
       case 'style':
-        if (typeof value === 'object') value = styleToCss(value as CSSStyleDeclaration) //|| null
+        if (typeof value === 'object')
+          value = styleToCss(value as CSSStyleDeclaration) //|| null
         break
     }
 
@@ -227,7 +244,7 @@ export const updateProps = (doc: Doc, el: Element, type: string, next: Props = {
   // created props
   for (const name in next) {
     if (!(name in attrs) && !(name in props!))
-      createProp(doc, el, type, name, next[name], attrs)
+      createProp(doc, el, type, name, next[name], attrs, isCustom)
   }
 
   c.props = next

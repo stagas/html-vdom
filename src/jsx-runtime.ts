@@ -1,3 +1,4 @@
+import { bindAll, EventEmitter } from 'everyday-utils'
 import type * as jsxi from 'html-jsx'
 
 export * from 'html-jsx'
@@ -59,6 +60,11 @@ declare global {
        */
       children?: JSX.Element
 
+      class?: string
+      className?: string
+      style?: Partial<CSSStyleDeclaration> | string | false | null | void
+      part?: string
+
       /**
        * Sets the `innerHTML` of an element to the **exact** string **without** escaping.
        */
@@ -95,8 +101,21 @@ type DomEl = Element | CharacterData | ChildNode
 type El = DomEl | Chunk
 type TargetEl = El | DocumentFragment
 type VAny = VNode<any>
-export type Hook = Fn & { fn: Fn; onremove?: Fn } & Record<string, any>
+
+export type Hook = Fn & {
+  fn: Fn
+  onremove?: Fn
+  onstart?: Fn
+  onend?: Fn
+} & EventEmitter<{
+  remove: () => void,
+  start: () => void,
+  end: () => void
+}>
+  & Record<string, any>
+
 export type Props = Record<string, any>
+
 type VNode<T extends string | symbol | typeof Text | typeof Comment | VFn> = {
   kind: T
   props: Props
@@ -105,6 +124,7 @@ type VNode<T extends string | symbol | typeof Text | typeof Comment | VFn> = {
   keep?: boolean
   onunref?: () => void
 }
+
 export const Fragment = Symbol()
 export const jsx = (kind: any, props: any, key: any) =>
   kind === Fragment
@@ -113,14 +133,20 @@ export const jsx = (kind: any, props: any, key: any) =>
 export const jsxs = jsx
 
 export let hook: Hook
-const createHook = () =>
-  function current(fn: Fn = (current as Hook).fn) {
+export const createHook = () =>
+  bindAll(new EventEmitter(), function current(fn: Fn = (current as Hook).fn) {
     const prev = hook
     hook = current as Hook
     hook.fn = fn
+
+    hook.onstart?.()
+    hook.emit('start')
     fn()
+    hook.onend?.()
+    hook.emit('end')
+
     hook = prev
-  } as Hook
+  }) as Hook
 
 class Chunk extends Array {
   firstChild?: any
@@ -147,6 +173,12 @@ class Chunk extends Array {
     this.dom.forEach(el => {
       ; (el as any).onunref?.()
       el.remove()
+
+      // if ((el as any)?.ref?.current) {
+      // console.log('removing', el)
+      // ; (el as any).ref.current = null
+      // }
+
     })
     this.splice(0)
   }
@@ -175,28 +207,32 @@ const flatDom = (arr: El[], res: DomEl[] = []) => {
 
 export const renderCache = new WeakMap()
 export function render(n: VKid): DocumentFragment
-export function render(n: VKid, el: TargetEl, doc?: Doc, withNull?: boolean): TargetEl
-export function render(n: VKid, el: TargetEl = document.createDocumentFragment(), doc: Doc = html, withNull = false) {
-  reconcile(el, forceArray(n, withNull), renderCache.get(el), doc)
+export function render<T extends TargetEl>(n: VKid, el: T, doc?: Doc, withNull?: boolean): T
+export function render(n: VKid, el: DocumentFragment = document.createDocumentFragment(), doc: Doc = html, withNull = false) {
+  reconcileVDom(el, forceArray(n, withNull), renderCache.get(el), doc)
   return el
 }
 
-const reconcile = (parent: TargetEl, nk: VKids, pk: VKids | VKid, doc: Doc) => {
+function reconcileVDom(parent: TargetEl, nk: VKids, pk: VKids | VKid, doc: Doc) {
   if ((pk as VKids)?.running) {
     console.warn('attempt to reconcile lane which is reconciling')
     return
   }
 
-  if (pk === nk) nk = [...nk]
+  if (pk === nk) {
+    // same?
+    // return
+    nk = [...nk]
+  }
 
   // ?
   nk.running = true
 
   renderCache.set(parent, nk)
 
-  for (const [i, n] of nk.entries() as any) {
-    nk[i] = n?.valueOf?.()
-  }
+  // for (const [i, n] of nk.entries() as any) {
+  //   nk[i] = n?.valueOf?.()
+  // }
 
   nk.dom = Array(nk.length)
   nk.keyed = new Map()
@@ -213,32 +249,43 @@ const reconcile = (parent: TargetEl, nk: VKids, pk: VKids | VKid, doc: Doc) => {
       }
       p = pk[pi]
       pel = pk.dom![pi]
-      nk.dom[i] = el = create(doc, n, p, pel)
-      if (el === pel) keep.add(pel)
+      nk.dom[i] = el = reconcileNode(doc, n, p, pel)
+      nk.mapped.set(el, n)
+      if (el === pel)
+        keep.add(pel)
     }
     for (const pel of pk.dom!) {
       if (!keep.has(pel)) {
         ; (pel as any).onunref?.()
+        // if ((pel as any)?.ref?.current) {
+        // console.log('removing', pel)
+        // ; (pel as any).ref.current = null
+        // }
         // TODO: this line commented is breaking things if enabled
         // and other things break if disabled?
         // if (parent instanceof Chunk) parent.removeChild(pel)
         pel.remove()
-          ; (pk.mapped!.get(pel) as VNode<VFn>)?.hook?.onremove?.()
+        const hook = (pk.mapped!.get(pel) as VNode<VFn>)?.hook
+        hook?.onremove?.()
+        hook?.emit('remove')
+        // render(null, pel)
       }
     }
   } else {
     for (let i = 0, n, el, k; i < nk.length; i++) {
       n = nk[i]
       k = (n as VAny)?.key ?? (n as any)?.ref?.key
-      if (k != null) nk.keyed.set(k, i)
-      nk.dom[i] = el = create(doc, n)
+      if (k != null)
+        nk.keyed.set(k, i)
+      nk.dom[i] = el = reconcileNode(doc, n)
       nk.mapped.set(el, n)
     }
   }
 
   nk.flatDom = flatDom(nk.dom)
   if ((pk as VKids)?.flatDom)
-    diff(parent, nk.flatDom, (pk as VKids)!.flatDom!)
+    diffDom(parent, nk.flatDom, (pk as VKids)!.flatDom!)
+
   else
     nk.flatDom.forEach(el => parent.appendChild(el))
 
@@ -247,7 +294,7 @@ const reconcile = (parent: TargetEl, nk: VKids, pk: VKids | VKid, doc: Doc) => {
 
 // scheduling to prevent triggering ref effects before this render finishes
 // TODO: has to be put in a proper queue instead of relying on the microtask
-const mount = (el: DomEl & { ref: VRef<any>; onref: any; onunref?: any }) => {
+function mountEl(el: DomEl & { ref: VRef<any>; onref: any; onunref?: any }) {
   if (el?.ref && el !== el.ref.current) {
     queueMicrotask(() => {
       if (el.isConnected) {
@@ -266,77 +313,89 @@ const mount = (el: DomEl & { ref: VRef<any>; onref: any; onunref?: any }) => {
   return el
 }
 
-const diff = (parent: TargetEl, n: DomEl[], p: DomEl[], i = 0, len = n.length, el?: DomEl, last?: DomEl) => {
+function diffDom(parent: TargetEl, n: DomEl[], p: DomEl[], i = 0, len = n.length, el?: DomEl, last?: DomEl) {
   if (parent instanceof Chunk) {
     // parent.splice(0) // , parent.length, ...n)
     // TODO: optimize this
     for (; i < len; i++) {
       el = n[i]
       if (i < parent.length) {
-        if (p[i] === el) continue
+        if (p[i] === el)
+          continue
         parent[i] = el
       } else {
         parent.push(el)
       }
     }
     let d = parent.length - len
-    while (d--) parent.pop()
+    while (d--)
+      parent.pop()
   } else {
     for (; i < len; i++) {
       el = n[i]
-      if (p[i] === el) last = el
-      else if (!i) parent.insertBefore(last = el, parent.firstChild)
-      else last!.after(last = el)
+      if (p[i] === el)
+        last = el
+      else if (!i)
+        parent.insertBefore(last = el, parent.firstChild)
+      else
+        last!.after(last = el)
     }
   }
 }
 
-const create = (doc: Doc, n: VKid, p?: VKid, pel?: El | null) => {
+function reconcileNode(doc: Doc, n: VKid, p?: VKid, pel?: El | null) {
   let el: El | null
   switch (typeof n) {
     case 'string':
     case 'number':
       if ((pel as Node)?.nodeType === TEXT_NODE) {
-        if (p != n) (pel as Node).nodeValue = n as string
+        if (p != n)
+          (pel as Node).nodeValue = n as string
         return pel as El
       }
       el = new Text(n as string)
       return el
     case 'object':
-      if (!n) break
+      if (!n)
+        break
       if (Array.isArray(n)) {
-        if (pel && Array.isArray(p)) el = pel as Chunk
-        else el = new Chunk()
-        if (!n.length) n.push(null)
-        reconcile(el, n, p, doc)
+        if (pel && Array.isArray(p))
+          el = pel as Chunk
+        else
+          el = new Chunk()
+        if (!n.length)
+          n.push(null)
+        reconcileVDom(el, n, p, doc)
         el.save()
       } else if (typeof n.kind === 'string') {
         // maybe switch to svg namespace
-        if (n.kind === 'svg') doc = svg
-        if (
-          ( // if we pass explicit element reference, and is the right tag, use that
-            n.props.ref?.current
-            && n.props.ref.current.tagName.toLowerCase() === n.kind
-            && (el = n.props.ref.current as El)
-          ) || (
+        if (n.kind === 'svg')
+          doc = svg
+        if (( // if we pass explicit element reference, and is the right tag, use that
+          n.props.ref?.current
+          && n.props.ref.current.tagName.toLowerCase() === n.kind
+          && (el = n.props.ref.current as El)
+        ) || (
             // if the previous element is of the same kind, use that
             pel
             && (p as VNode<string>)?.kind === n.kind
             && (el = pel)
-          )
-        ) {
+          )) {
           // only update props if we have the element
+          ; (el as any).onprops?.(n.props)
           updateProps(doc, el as Element, n.kind, n.props)
         } else {
           // otherwise create an element and props
-          el = doc(n.kind, 'is' in n.props ? { is: n.props.is } : void 0)
+          el = doc(n.kind, 'is' in n.props ? { is: n.props.is } : void 0); (el as any).onprops?.(n.props)
           createProps(doc, el as Element, n.kind, n.props)
         }
         // maybe switch to xhtml namespace
-        if (n.kind === 'foreignObject') doc = html
+        if (n.kind === 'foreignObject')
+          doc = html
         // render children
-        render(n.props.children, el, doc)
-        mount(el as any)
+        if (!n.kind.includes('-'))
+          render(n.props.children, el, doc)
+        mountEl(el as any)
       } else {
         let initial = true
         if (!((el = pel!) && (n.hook = (p as VNode<VFn>)?.hook))) {
@@ -346,16 +405,16 @@ const create = (doc: Doc, n: VKid, p?: VKid, pel?: El | null) => {
         const anchor = new Comment()
         let prevDom: DomEl[]
         let nextDom: DomEl[]
-        n.hook(() => {
+        n.hook(function hookRun() {
           let next!: ChildNode | null
-          if (!initial && !(next = el!.nextSibling as ChildNode)) el!.after(next = anchor)
+          if (!initial && !(next = el!.nextSibling as ChildNode))
+            el!.after(next = anchor)
           if (typeof n.kind !== 'function') {
             console.warn('Hook called but node is not a function component.')
             console.warn(n)
             return
           }
-          render(n.kind(n.props), el!, doc, true)
-            ; (el as Chunk).save()
+          render(n.kind(n.props), el!, doc, true); (el as Chunk).save()
           if (!initial && next) {
             nextDom = flatDom(el as Chunk)
             if (prevDom?.length > 0) {
@@ -370,18 +429,21 @@ const create = (doc: Doc, n: VKid, p?: VKid, pel?: El | null) => {
                 }
               }
             } else {
-              for (const e of nextDom) next.before(e)
+              for (const e of nextDom)
+                next.before(e)
             }
             prevDom = nextDom
             next === anchor && next.remove()
           } else {
+            prevDom = flatDom(el as Chunk)
             initial = false
           }
         })
       }
       return el
   }
-  if ((pel as Node)?.nodeType === COMMENT_NODE) return pel as El
+  if ((pel as Node)?.nodeType === COMMENT_NODE)
+    return pel as El
   el = new Comment()
   return el
 }
