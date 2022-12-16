@@ -82,7 +82,7 @@
     "@typescript-eslint/parser": "5.31.0",
     "bunzee": "^1.0.0",
     "chokidar": "3.5.3",
-    "devito": "^2.0.0",
+    "devito": "^2.1.0",
     "dokio": "^1.1.0",
     "dprint": "0.30.3",
     "eslint": "8.20.0",
@@ -96,12 +96,12 @@
     "rimraf": "3.0.2",
     "swcno": "0.1.1",
     "typescript": "4.7.3",
-    "utr": "^1.3.3"
+    "utr": "^1.3.4"
   },
   "dependencies": {
-    "event-toolkit": "^1.2.0",
+    "event-toolkit": "^1.3.0",
     "everyday-types": "^1.1.0",
-    "everyday-utils": "^1.3.0",
+    "everyday-utils": "^1.5.0",
     "html-jsx": "^1.0.0"
   }
 }

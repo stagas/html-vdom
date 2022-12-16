@@ -38,6 +38,10 @@ declare global {
        */
       ref?: VRef<unknown> | null
 
+      hook?: VRef<unknown> | null
+      onhook?: (hook: Hook<any>) => (() => void) | void
+      onunhook?: (hook: Hook<any>) => (() => void) | void
+
       /**
        * List index key - each item's `key` must be unique.
        * @private
@@ -102,7 +106,8 @@ type El = DomEl | Chunk
 type TargetEl = El | DocumentFragment
 type VAny = VNode<any>
 
-export type Hook = Fn & {
+// eslint-disable-next-line @typescript-eslint/ban-types
+export type Hook<T = {}> = Fn & {
   fn: Fn
   onremove?: Fn
   onstart?: Fn
@@ -111,8 +116,7 @@ export type Hook = Fn & {
   remove: () => void,
   start: () => void,
   end: () => void
-}>
-  & Record<string, any>
+}> & T //Record<string, any>
 
 export type Props = Record<string, any>
 
@@ -123,6 +127,7 @@ type VNode<T extends string | symbol | typeof Text | typeof Comment | VFn> = {
   hook?: Hook | undefined
   keep?: boolean
   onunref?: () => void
+  onunhook?: () => void
 }
 
 export const Fragment = Symbol()
@@ -221,8 +226,8 @@ function reconcileVDom(parent: TargetEl, nk: VKids, pk: VKids | VKid, doc: Doc) 
 
   if (pk === nk) {
     // same?
-    // return
-    nk = [...nk]
+    return
+    // nk = [...nk]
   }
 
   // ?
@@ -398,9 +403,11 @@ function reconcileNode(doc: Doc, n: VKid, p?: VKid, pel?: El | null) {
         mountEl(el as any)
       } else {
         let initial = true
+        let created = false
         if (!((el = pel!) && (n.hook = (p as VNode<VFn>)?.hook))) {
           el = new Chunk()
           n.hook = createHook()
+          created = true
         }
         const anchor = new Comment()
         let prevDom: DomEl[]
@@ -439,6 +446,17 @@ function reconcileNode(doc: Doc, n: VKid, p?: VKid, pel?: El | null) {
             initial = false
           }
         })
+
+        if (created && n.props.hook) {
+          n.props.hook.current = n.hook
+          n.props.onunhook ??= n.props.onhook?.(n.hook)
+          n.hook.once('remove', () => {
+            queueMicrotask(() => {
+              n.props.onunhook?.(n.hook)
+              n.props.hook.current = null
+            })
+          })
+        }
       }
       return el
   }
