@@ -188,8 +188,8 @@ export function updateProps(doc: Doc, el: Element, type: string, next: Props = {
           if (isEvent(attr)) {
             attr = toEvent(attr)
             //!? 'updated event listener', attr, prev, value
-            el.removeEventListener(attr, prev, prev)
-            el.addEventListener(attr, value, value)
+            if (prev) el.removeEventListener(attr, prev, prev)
+            if (value) el.addEventListener(attr, value, value)
           } else {
             //!? 'updated function', attr, prev, value
             props[attr] = (el as Any)[attr] = value
