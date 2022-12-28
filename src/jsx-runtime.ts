@@ -68,6 +68,8 @@ declare global {
       className?: string
       style?: Partial<CSSStyleDeclaration> | string | false | null | void
       part?: string
+      exportparts?: string
+      title?: string
 
       /**
        * Sets the `innerHTML` of an element to the **exact** string **without** escaping.
