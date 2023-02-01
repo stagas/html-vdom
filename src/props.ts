@@ -175,13 +175,13 @@ export function updateProps(doc: Doc, el: Element, type: string, next: Props = {
     prev = props[name]
     if (prev !== value) {
       if (typeof value === 'function') {
-        if (prev?.fn && value?.fn) {
-          //!? 'updated fn'
-          value = prev.update(value.fn, value.options)
-          if (value === prev) {
-            next[name] = value
-          }
-        }
+        // if (prev?.fn && value?.fn) {
+        //   //!? 'updated fn'
+        //   value = prev.update(value.fn, value.options)
+        //   if (value === prev) {
+        //     next[name] = value
+        //   }
+        // }
 
         if (prev !== value || cacheRef !== el) {
           let attr = name // toAttr[name] || name
