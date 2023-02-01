@@ -99,9 +99,9 @@
     "utr": "^1.3.4"
   },
   "dependencies": {
-    "event-toolkit": "^1.3.0",
+    "event-toolkit": "^1.3.1",
     "everyday-types": "^1.1.0",
-    "everyday-utils": "^1.6.0",
+    "everyday-utils": "^1.7.0",
     "html-jsx": "^1.0.0"
   }
 }
