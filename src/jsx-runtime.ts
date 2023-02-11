@@ -212,11 +212,32 @@ const flatDom = (arr: El[], res: DomEl[] = []) => {
   return res
 }
 
+
+let pending = 0
+const mounts: any[] = []
 export const renderCache = new WeakMap()
 export function render(n: VKid): DocumentFragment
 export function render<T extends TargetEl>(n: VKid, el: T, doc?: Doc, withNull?: boolean): T
 export function render(n: VKid, el: DocumentFragment = document.createDocumentFragment(), doc: Doc = html, withNull = false) {
+  pending++
   reconcileVDom(el, forceArray(n, withNull), renderCache.get(el), doc)
+  if (!--pending) {
+    const toMount = mounts.splice(0)
+    queueMicrotask(() => {
+      toMount.forEach((el) => {
+        if (el?.ref && el !== el.ref.current) {
+          if (el.isConnected) {
+            el.ref.current = el
+          }
+        }
+        if (el?.onref) {
+          if (el.isConnected) {
+            el.onunref = el.onref(el)
+          }
+        }
+      })
+    })
+  }
   return el
 }
 
@@ -301,24 +322,25 @@ function reconcileVDom(parent: TargetEl, nk: VKids, pk: VKids | VKid, doc: Doc) 
 
 // scheduling to prevent triggering ref effects before this render finishes
 // TODO: has to be put in a proper queue instead of relying on the microtask
-function mountEl(el: DomEl & { ref: VRef<any>; onref: any; onunref?: any }) {
-  if (el?.ref && el !== el.ref.current) {
-    queueMicrotask(() => {
-      if (el.isConnected) {
-        el.ref.current = el
-      }
-    })
-  }
-  if (el?.onref) {
-    queueMicrotask(() => {
-      if (el.isConnected) {
-        el.onunref = el.onref(el)
-      }
-    })
-  }
+// function mountEl(el: DomEl & { ref: VRef<any>; onref: any; onunref?: any }) {
+//   if (el?.ref && el !== el.ref.current) {
+//     mounts.push(el)
+//     // queueMicrotask(() => {
+//     // if (el.isConnected) {
+//     el.ref.current = el
+//     // }
+//     // })
+//   }
+//   if (el?.onref) {
+//     // queueMicrotask(() => {
+//     // if (el.isConnected) {
+//     el.onunref = el.onref(el)
+//     // }
+//     // })
+//   }
 
-  return el
-}
+//   return el
+// }
 
 function diffDom(parent: TargetEl, n: DomEl[], p: DomEl[], i = 0, len = n.length, el?: DomEl, last?: DomEl) {
   if (parent instanceof Chunk) {
@@ -402,7 +424,7 @@ function reconcileNode(doc: Doc, n: VKid, p?: VKid, pel?: El | null) {
         // render children
         if (!n.kind.includes('-'))
           render(n.props.children, el, doc)
-        mountEl(el as any)
+        mounts.push(el as any)
       } else {
         let initial = true
         let created = false
